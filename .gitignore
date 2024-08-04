@@ -8,6 +8,9 @@
 *.userosscache
 *.sln.docstates
 
+# Microsoft Visual Studio
+*.vs/
+
 # User-specific files (Mono auto generated)
 mono_crash.*
 
