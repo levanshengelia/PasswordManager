@@ -33,11 +33,12 @@
             usernameFieldControl1 = new UserControls.UsernameFieldControl();
             registrationButtonControl1 = new UserControls.Buttons.RegistrationButtonControl();
             loginButtonControl1 = new UserControls.Buttons.LoginButtonControl();
+            confirmPasswordControl1 = new UserControls.TextBoxes.ConfirmPasswordControl();
             SuspendLayout();
             // 
             // passwordFieldControl1
             // 
-            passwordFieldControl1.Location = new Point(32, 106);
+            passwordFieldControl1.Location = new Point(32, 103);
             passwordFieldControl1.Name = "passwordFieldControl1";
             passwordFieldControl1.Size = new Size(329, 51);
             passwordFieldControl1.TabIndex = 0;
@@ -70,11 +71,19 @@
             loginButtonControl1.Size = new Size(219, 64);
             loginButtonControl1.TabIndex = 4;
             // 
+            // confirmPasswordControl1
+            // 
+            confirmPasswordControl1.Location = new Point(-15, 145);
+            confirmPasswordControl1.Name = "confirmPasswordControl1";
+            confirmPasswordControl1.Size = new Size(378, 51);
+            confirmPasswordControl1.TabIndex = 5;
+            // 
             // RegistrationForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(412, 321);
+            Controls.Add(confirmPasswordControl1);
             Controls.Add(loginButtonControl1);
             Controls.Add(registrationButtonControl1);
             Controls.Add(usernameFieldControl1);
@@ -92,5 +101,6 @@
         private UserControls.UsernameFieldControl usernameFieldControl1;
         private UserControls.Buttons.RegistrationButtonControl registrationButtonControl1;
         private UserControls.Buttons.LoginButtonControl loginButtonControl1;
+        private UserControls.TextBoxes.ConfirmPasswordControl confirmPasswordControl1;
     }
 }

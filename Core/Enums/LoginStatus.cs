@@ -10,6 +10,6 @@
     {
         Success = 1,
         InvalidCredentials = 2,
-        Unknown = 3,
+        ServerError = 3,
     }
 }

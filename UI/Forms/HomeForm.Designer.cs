@@ -28,26 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            dataGridView1 = new DataGridView();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            Grid = new DataGridView();
             ApplicationName = new DataGridViewTextBoxColumn();
             Username = new DataGridViewTextBoxColumn();
             PasswordCopyOption = new DataGridViewButtonColumn();
             DeleteOption = new DataGridViewButtonColumn();
             AddNewAccountInfoButton = new Button();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            LogOutButton = new Button();
+            ((System.ComponentModel.ISupportInitialize)Grid).BeginInit();
             SuspendLayout();
             // 
-            // dataGridView1
+            // Grid
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ApplicationName, Username, PasswordCopyOption, DeleteOption });
-            dataGridView1.Location = new Point(1, 0);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.ShowCellErrors = false;
-            dataGridView1.Size = new Size(850, 496);
-            dataGridView1.TabIndex = 0;
+            Grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            Grid.Columns.AddRange(new DataGridViewColumn[] { ApplicationName, Username, PasswordCopyOption, DeleteOption });
+            Grid.Location = new Point(1, 0);
+            Grid.Name = "Grid";
+            Grid.ShowCellErrors = false;
+            Grid.Size = new Size(850, 496);
+            Grid.TabIndex = 0;
             // 
             // ApplicationName
             // 
@@ -64,11 +65,11 @@
             // 
             // PasswordCopyOption
             // 
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = Color.FromArgb(128, 255, 128);
-            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(128, 255, 128);
-            dataGridViewCellStyle3.SelectionForeColor = Color.Black;
-            PasswordCopyOption.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(128, 255, 128);
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(128, 255, 128);
+            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
+            PasswordCopyOption.DefaultCellStyle = dataGridViewCellStyle1;
             PasswordCopyOption.HeaderText = "";
             PasswordCopyOption.Name = "PasswordCopyOption";
             PasswordCopyOption.Resizable = DataGridViewTriState.False;
@@ -79,12 +80,12 @@
             // 
             // DeleteOption
             // 
-            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = Color.Red;
-            dataGridViewCellStyle4.ForeColor = Color.Black;
-            dataGridViewCellStyle4.SelectionBackColor = Color.Red;
-            dataGridViewCellStyle4.SelectionForeColor = Color.Black;
-            DeleteOption.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = Color.Red;
+            dataGridViewCellStyle2.ForeColor = Color.Black;
+            dataGridViewCellStyle2.SelectionBackColor = Color.Red;
+            dataGridViewCellStyle2.SelectionForeColor = Color.Black;
+            DeleteOption.DefaultCellStyle = dataGridViewCellStyle2;
             DeleteOption.HeaderText = "";
             DeleteOption.Name = "DeleteOption";
             DeleteOption.ReadOnly = true;
@@ -97,7 +98,7 @@
             AddNewAccountInfoButton.BackColor = SystemColors.ButtonFace;
             AddNewAccountInfoButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             AddNewAccountInfoButton.ForeColor = Color.Black;
-            AddNewAccountInfoButton.Location = new Point(289, 528);
+            AddNewAccountInfoButton.Location = new Point(289, 523);
             AddNewAccountInfoButton.Name = "AddNewAccountInfoButton";
             AddNewAccountInfoButton.Size = new Size(277, 59);
             AddNewAccountInfoButton.TabIndex = 1;
@@ -105,26 +106,41 @@
             AddNewAccountInfoButton.UseVisualStyleBackColor = false;
             AddNewAccountInfoButton.Click += AddNewAccountInfoButton_Click;
             // 
+            // LogOutButton
+            // 
+            LogOutButton.BackColor = SystemColors.ButtonFace;
+            LogOutButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LogOutButton.ForeColor = Color.Black;
+            LogOutButton.Location = new Point(289, 607);
+            LogOutButton.Name = "LogOutButton";
+            LogOutButton.Size = new Size(277, 59);
+            LogOutButton.TabIndex = 2;
+            LogOutButton.Text = "Log out";
+            LogOutButton.UseVisualStyleBackColor = false;
+            LogOutButton.Click += LogOutButton_Click;
+            // 
             // HomeForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(843, 616);
+            ClientSize = new Size(843, 691);
+            Controls.Add(LogOutButton);
             Controls.Add(AddNewAccountInfoButton);
-            Controls.Add(dataGridView1);
+            Controls.Add(Grid);
             Name = "HomeForm";
             Text = "HomeForm";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)Grid).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private DataGridView dataGridView1;
+        private DataGridView Grid;
         private DataGridViewTextBoxColumn ApplicationName;
         private DataGridViewTextBoxColumn Username;
         private DataGridViewButtonColumn PasswordCopyOption;
         private DataGridViewButtonColumn DeleteOption;
         private Button AddNewAccountInfoButton;
+        private Button LogOutButton;
     }
 }

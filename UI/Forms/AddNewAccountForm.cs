@@ -1,4 +1,7 @@
-﻿namespace UI.Forms;
+﻿using Core.Core;
+using System.Runtime.CompilerServices;
+
+namespace UI.Forms;
 
 public partial class AddNewAccountForm : Form
 {
@@ -10,13 +13,19 @@ public partial class AddNewAccountForm : Form
     public AddNewAccountForm()
     {
         InitializeComponent();
+
+        Load += new EventHandler(LoginForm_Load!);
     }
 
 
     private void AddAccountButton_Click(object sender, EventArgs e)
     {
         DialogResult = DialogResult.OK;
-
         Close();
+    }
+
+    private void LoginForm_Load(object sender, EventArgs e)
+    {
+        applicationNameControl1.FocusOnTextField();
     }
 }

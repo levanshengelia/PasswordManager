@@ -21,8 +21,7 @@ static class Program
 
         var core = serviceProvider.GetRequiredService<ICore>();
 
-        //new RegistrationForm(core).Show();
-        new HomeForm(new(), core).Show();
+        new RegistrationForm(core).Show();
 
         Application.Run();
 

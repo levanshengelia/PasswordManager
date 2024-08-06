@@ -1,6 +1,7 @@
 ﻿using Core.Core;
 using Core.Enums;
 using Core.Models;
+using System.ComponentModel;
 
 namespace UI.Forms
 {
@@ -24,32 +25,78 @@ namespace UI.Forms
 
         private void RegisterButtonClicked(object? sender, EventArgs e)
         {
+            RedirectToRegisterForm();
+        }
+
+        private void RedirectToRegisterForm()
+        {
             Close();
             Dispose();
 
             new RegistrationForm(_core).Show();
         }
-    
+
         private void LoginButtonClicked(object? sender, EventArgs e)
         {
             var userInfo = GetUserInfoFromTextBoxes();
 
-            var loginResult = _core.Login(userInfo);
+            //todo: build LoginRequest (using userInfo)
 
-            if (loginResult.Status is LoginStatus.Success)
+            var loginResponse = _core.Login(new());
+
+            switch (loginResponse.Status)
             {
-                RedirectToHomeForm(loginResult.Token);
+                case LoginStatus.Success:
+                    HandleSuccessfulLogin(loginResponse.Token);
+                    break;
+                case LoginStatus.InvalidCredentials:
+                    MessageBox.Show("Invalid credentials, try again");
+                    break;
+                case LoginStatus.ServerError:
+                    MessageBox.Show("Internal server error, try again");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid status value");
             }
         }
 
-        private void RedirectToHomeForm(string token)
+        private void HandleSuccessfulLogin(string token)
+        {
+            //todo: build GetUserAccountInfoRequest
+
+            var getUserAccountInfoResponse = _core.GetUserAccountInfo(new());
+
+            switch (getUserAccountInfoResponse.Status)
+            {
+                case GetUserAccountInfoStatus.Success:
+                    RedirectToHomeForm(getUserAccountInfoResponse.UserInfo);
+                    break;
+                case GetUserAccountInfoStatus.InvalidToken:
+                    MessageBox.Show("Your token is expired or is invalid, log in and try again");
+                    RedirectToLoginForm();
+                    break;
+                case GetUserAccountInfoStatus.ServerError:
+                    MessageBox.Show("Internal server error, log in and try again");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid status value");
+            }
+        }
+
+        private void RedirectToHomeForm(UserInfo userInfo)
         {
             Close();
             Dispose();
 
-            var userAccountInfo = _core.GetUserAccountInfo(token);
+            new HomeForm(userInfo, _core).Show();
+        }
 
-            new HomeForm(userAccountInfo, _core).Show();
+        private void RedirectToLoginForm()
+        {
+            Close();
+            Dispose();
+
+            new LoginForm(_core).Show();
         }
 
         private UserLoginInfo GetUserInfoFromTextBoxes()
