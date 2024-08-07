@@ -4,6 +4,7 @@
     {
         Success = 1,
         InvalidToken = 2,
-        ServerError = 3,
+        UserDoesNotExists = 3,
+        ServerError = 4,
     }
 }

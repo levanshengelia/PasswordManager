@@ -1,6 +1,4 @@
-﻿using Core.Enums;
-using Core.Models;
-using Core.Requests;
+﻿using Core.Requests;
 using Core.Responses;
 namespace Core.Core
 {
