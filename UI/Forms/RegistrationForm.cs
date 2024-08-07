@@ -1,4 +1,5 @@
 ﻿using Core.Core;
+using Core.Enums;
 using Core.Models;
 using UI.Forms;
 
@@ -24,21 +25,41 @@ namespace UI
 
         private void LoginButtonClicked(object? sender, EventArgs e)
         {
-            Close();
-            Dispose();
-
-            new LoginForm(_core).Show();
+            RedirectToLoginForm();
         }
 
         private void RegisterButtonClicked(object? sender, EventArgs e)
         {
             var userInfo = GetUserInfoFromTextBoxes();
 
-            var registrationRequestResult = _core.Register(userInfo);
+            //todo: build RegisterRequest (using userInfo)
 
-            if (registrationRequestResult is Core.Enums.RegistrationStatus.Success)
+            var registerResponse = _core.Register(new());
+
+            switch (registerResponse.Status)
             {
-                RedirectToLoginForm();
+                case RegisterStatus.Success:
+                    MessageBox.Show("You registered successfully");
+                    RedirectToLoginForm();
+                    break;
+                case RegisterStatus.PasswordsDontMatch:
+                    MessageBox.Show("Passwords don't match, try again");
+                    break;
+                case RegisterStatus.InvalidEmail:
+                    MessageBox.Show("Invalid email");
+                    break;
+                case RegisterStatus.WeakPassword:
+                    MessageBox.Show("Password is too weak. use at least 8 characters and at least 3 out of these 4:" +
+                        " 1 uppercase letter, 1 lowercase letter, 1 special symbol, and 1 number");
+                    break;
+                case RegisterStatus.UsernameAlreadyTaken:
+                    MessageBox.Show("The user with this name is already exists, choose different username");
+                    break;
+                case RegisterStatus.ServerError:
+                    MessageBox.Show("Internal server error, try again");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid status value");
             }
         }
 
@@ -55,7 +76,7 @@ namespace UI
             var email = emailUserControl1.Email!;
             var username = usernameFieldControl1.Username!;
             var password = passwordFieldControl1.Password!;
-            var confirmedPassword = "alkjfsd";//confirmPassword?.Text!;
+            var confirmedPassword = confirmPasswordControl1.ConfirmedPassword!;
 
             return new UserRegistrationInfo
             {

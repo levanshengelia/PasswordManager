@@ -19,5 +19,10 @@ namespace UI.UserControls.TextBoxes
             InitializeComponent();
         }
 
+        public void FocusOnTextField()
+        {
+            if(ApplicationNameTextBox.CanFocus)
+                ApplicationNameTextBox.Focus();
+        }
     }
 }

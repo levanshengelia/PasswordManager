@@ -37,6 +37,8 @@
             ApplicationNameTextBox.Location = new Point(123, 15);
             ApplicationNameTextBox.Name = "ApplicationNameTextBox";
             ApplicationNameTextBox.Size = new Size(214, 23);
+            ApplicationNameLabel.Visible = true;
+            ApplicationNameTextBox.Enabled = true;
             ApplicationNameTextBox.TabIndex = 0;
             // 
             // ApplicationNameLabel
@@ -58,6 +60,8 @@
             Size = new Size(357, 51);
             ResumeLayout(false);
             PerformLayout();
+            Enabled = true;
+            Visible = true;
         }
 
         #endregion

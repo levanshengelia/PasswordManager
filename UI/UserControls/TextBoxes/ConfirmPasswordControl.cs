@@ -12,9 +12,12 @@ namespace UI.UserControls.TextBoxes
 {
     public partial class ConfirmPasswordControl : UserControl
     {
+        public string? ConfirmedPassword => ConfirmPasswordTextBox?.Text;
+
         public ConfirmPasswordControl()
         {
             InitializeComponent();
         }
+
     }
 }

@@ -1,31 +1,48 @@
 ﻿using Core.Enums;
-using Core.Models;
+using Core.Requests;
+using Core.Responses;
 
 namespace Core.Core
 {
     public class CoreService : ICore
     {
-        public UserInfo GetUserAccountInfo(string token)
+        public RegisterResponse Register(RegisterRequest request)
         {
-            return new UserInfo
+            return new RegisterResponse
             {
-                Username = "levani",
-                Passwords = [],
+                Status = RegisterStatus.Success,
             };
         }
-
-        public LoginResult Login(UserLoginInfo info)
+        
+        public LoginResponse Login(LoginRequest request)
         {
-            return new LoginResult
+            return new LoginResponse
             {
                 Status = LoginStatus.Success,
-                Token = "bliad"
             };
         }
 
-        public RegistrationStatus Register(UserRegistrationInfo info)
+        public GetUserAccountInfoResponse GetUserAccountInfo(GetUserAccountInfoRequest request)
         {
-            return RegistrationStatus.Success;
+            return new GetUserAccountInfoResponse
+            {
+                Status = GetUserAccountInfoStatus.Success,
+                UserInfo = new()
+            };
+        }
+
+        public AddAccountResponse AddAccount(AddAccountRequest request)
+        {
+            return new AddAccountResponse
+            {
+                Status = AddAccountStatus.ServerError,
+                NewlyAddedAccountInfo = new()
+                {
+                    Name = "Twitter",
+                    Username = "Leo",
+                    EncryptedPassword = "blabla"
+                },
+            };
         }
     }
 }
