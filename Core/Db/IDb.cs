@@ -7,6 +7,9 @@ namespace Core.Db
         public void AddNewUser(UserRegistrationInfo userInfo);
         public bool IsCredentialsValid(UserLoginInfo userInfo);
         public bool ContainsUser(string username);
-        public void SaveToken(string userName, string newToken);
+        public UserPasswordSystemInfo GetUserInfo(string username);
+        public bool ContainsAccount(string username, string accountName);
+        public bool AddAccount(AccountInfo accountInfo);
+        public bool DeleteAccount(string username, string accountName);
     }
 }

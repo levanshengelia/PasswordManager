@@ -1,9 +1,9 @@
 ﻿namespace Core.Enums
 {
-    public enum AddAccountStatus
+    public enum DeleteAccountStatus
     {
         Success = 1,
-        AccountUsernamePairAlreadyExists = 2,
+        AccountDoesNotExist = 2,
         InvalidToken = 3,
         ServerError = 4,
     }

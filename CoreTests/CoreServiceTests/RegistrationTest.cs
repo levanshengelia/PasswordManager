@@ -1,4 +1,5 @@
 using Core.Core;
+using Core.Core.Helpers;
 using Core.Db;
 using Core.Enums;
 using Core.Models;
@@ -8,18 +9,19 @@ using System.Runtime.CompilerServices;
 
 namespace Tests.CoreServiceTests
 {
-    public class CoreRegistrationTest
+    public class RegistrationTest
     {
         [Fact]
         public void Register_ValidRequest_RegisteredSuccessfully()
         {
             var userDb = new List<string>();
             var dbMock = new Mock<IDb>();
+            var tokenService = new Mock<ITokenService>();
 
             dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationInfo>()))
                 .Callback<UserRegistrationInfo>(userInfo => userDb.Add(userInfo.Username));
 
-            var core = new CoreService(dbMock.Object);
+            var core = new CoreService(dbMock.Object, tokenService.Object);
 
             var registerResponse = core.Register(new RegisterRequest
             {
@@ -92,13 +94,14 @@ namespace Tests.CoreServiceTests
         {
             var userDb = new List<string>();
             var dbMock = new Mock<IDb>();
+            var tokenService = new Mock<ITokenService>();
 
             dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationInfo>()))
                 .Callback<UserRegistrationInfo>(userInfo => userDb.Add(userInfo.Username));
 
             dbMock.Setup(x => x.ContainsUser(It.IsAny<string>())).Returns<string>(userDb.Contains);
 
-            var core = new CoreService(dbMock.Object);
+            var core = new CoreService(dbMock.Object, tokenService.Object);
 
             _ = core.Register(new RegisterRequest
             {
@@ -129,11 +132,12 @@ namespace Tests.CoreServiceTests
         {
             var userDb = new List<string>();
             var dbMock = new Mock<IDb>();
+            var tokenService = new Mock<ITokenService>();
 
             dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationInfo>()))
                 .Callback<UserRegistrationInfo>(userInfo => userDb.Add(userInfo.Username));
 
-            var core = new CoreService(dbMock.Object);
+            var core = new CoreService(dbMock.Object, tokenService.Object);
 
             var registerResponse = core.Register(new RegisterRequest
             {

@@ -49,6 +49,7 @@
             Grid.ShowCellErrors = false;
             Grid.Size = new Size(850, 496);
             Grid.TabIndex = 0;
+            Grid.CellContentClick += Grid_CellContentClick;
             // 
             // ApplicationName
             // 

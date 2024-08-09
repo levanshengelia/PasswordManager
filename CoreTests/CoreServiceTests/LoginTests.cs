@@ -1,4 +1,5 @@
 ﻿using Core.Core;
+using Core.Core.Helpers;
 using Core.Db;
 using Core.Enums;
 using Core.Models;
@@ -13,11 +14,12 @@ namespace Tests.CoreServiceTests
         public void Login_ValidRequest_LogedInSuccessfully()
         {
             var userDb = new List<string>();
-            var dbMock = new Mock<IDb>();
+            var dbMock = new Mock<IDb>(); 
+            var tokenService = new Mock<ITokenService>();
 
             dbMock.Setup(x => x.IsCredentialsValid(It.IsAny<UserLoginInfo>())).Returns(true);
 
-            var core = new CoreService(dbMock.Object);
+            var core = new CoreService(dbMock.Object, tokenService.Object);
 
             var loginResponse = core.Login(new LoginRequest
             {
@@ -37,10 +39,11 @@ namespace Tests.CoreServiceTests
         {
             var userDb = new List<string>();
             var dbMock = new Mock<IDb>();
+            var tokenService = new Mock<ITokenService>();
 
             dbMock.Setup(x => x.IsCredentialsValid(It.IsAny<UserLoginInfo>())).Returns(false);
 
-            var core = new CoreService(dbMock.Object);
+            var core = new CoreService(dbMock.Object, tokenService.Object);
 
             var loginResponse = core.Login(new LoginRequest
             {

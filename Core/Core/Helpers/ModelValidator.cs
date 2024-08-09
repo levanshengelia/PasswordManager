@@ -3,7 +3,7 @@ using Core.Enums;
 using Core.Models;
 using System.Text.RegularExpressions;
 
-namespace Core.Validations
+namespace Core.Core.Helpers
 {
     internal static class ModelValidator
     {

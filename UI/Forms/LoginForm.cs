@@ -83,7 +83,7 @@ namespace UI.Forms
             }
         }
 
-        private void RedirectToHomeForm(UserInfo userInfo)
+        private void RedirectToHomeForm(UserPasswordSystemInfo userInfo)
         {
             Close();
             Dispose();

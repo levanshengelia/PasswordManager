@@ -8,5 +8,7 @@ namespace Core.Core
         public LoginResponse Login(LoginRequest request);
         public GetUserAccountInfoResponse GetUserAccountInfo(GetUserAccountInfoRequest request);
         public AddAccountResponse AddAccount(AddAccountRequest request);
+        public DeleteAccountResponse DeleteAccount(DeleteAccountRequest request);
+        public GetPasswordResponse GetPassword(GetPasswordRequest request);
     }
 }
