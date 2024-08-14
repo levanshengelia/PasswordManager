@@ -7,6 +7,7 @@ using Core.RequestValidations.FluentValidations;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 
 namespace UI.Configurations;
@@ -17,8 +18,15 @@ public static class ServiceProviderBuilder
     {
         var serviceCollection = new ServiceCollection();
 
+        Log.Logger = new LoggerConfiguration()
+               .MinimumLevel.Debug()
+               .WriteTo.Console()
+               .CreateLogger();
+
         serviceCollection.AddSingleton<ITokenService, TokenService>();
         serviceCollection.AddSingleton<ICryptoService, CryptoService>();
+
+        serviceCollection.AddLogging(configure => configure.AddSerilog());
 
         serviceCollection.AddMediatR(config =>
         {
