@@ -1,5 +1,5 @@
 using Core.Core;
-using Core.Core.Helpers;
+using Core.Core.Services.IServices;
 using Core.Db;
 using Core.Enums;
 using Core.Models;
@@ -18,14 +18,14 @@ namespace Tests.CoreServiceTests
             var dbMock = new Mock<IDb>();
             var tokenService = new Mock<ITokenService>();
 
-            dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationInfo>()))
-                .Callback<UserRegistrationInfo>(userInfo => userDb.Add(userInfo.Username));
+            dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationModel>()))
+                .Callback<UserRegistrationModel>(userInfo => userDb.Add(userInfo.Username));
 
             var core = new CoreService(dbMock.Object, tokenService.Object);
 
-            var registerResponse = core.Register(new RegisterRequest
+            var registerResponse = core.Register(new RegistrationRequest
             {
-                UserInfo = new UserRegistrationInfo
+                UserInfo = new UserRegistrationModel
                 {
                     Username = "levani",
                     Email = "lshen20@freeuni.edu.ge",
@@ -34,7 +34,7 @@ namespace Tests.CoreServiceTests
                 }
             });
 
-            Assert.Equal(RegisterStatus.Success, registerResponse.Status);
+            Assert.Equal(RegistrationStatus.Success, registerResponse.Status);
 
             Assert.Equal("levani", userDb.First());
         }
@@ -42,7 +42,7 @@ namespace Tests.CoreServiceTests
         [Fact]
         public void Register_PasswordsDontMatch_RegisteredUnsuccessfully()
         {
-            var userInfo = new UserRegistrationInfo
+            var userInfo = new UserRegistrationModel
             {
                 Username = "levani",
                 Email = "lshen20@freeuni.edu.ge",
@@ -50,7 +50,7 @@ namespace Tests.CoreServiceTests
                 ConfirmedPassword = "Levani123$%",
             };
 
-            InvalidTestHelper(RegisterStatus.PasswordsDontMatch, userInfo);
+            InvalidTestHelper(RegistrationStatus.PasswordsDontMatch, userInfo);
         }
 
         [Theory]
@@ -60,7 +60,7 @@ namespace Tests.CoreServiceTests
         [InlineData("lshen20freeuni.edu.ge@")]
         public void Register_InvalidEmail_RegisteredUnsuccessfully(string invalidEmail)
         {
-            var userInfo = new UserRegistrationInfo
+            var userInfo = new UserRegistrationModel
             {
                 Username = "levani",
                 Email = invalidEmail,
@@ -68,7 +68,7 @@ namespace Tests.CoreServiceTests
                 ConfirmedPassword = "Levani123$%",
             };
 
-            InvalidTestHelper(RegisterStatus.InvalidEmail, userInfo);
+            InvalidTestHelper(RegistrationStatus.InvalidEmail, userInfo);
         }
 
         [Theory]
@@ -78,7 +78,7 @@ namespace Tests.CoreServiceTests
         [InlineData("LevaniLevani")]
         public void Register_WeakPassword_RegisteredUnsuccessfully(string weakPassword)
         {
-            var userInfo = new UserRegistrationInfo
+            var userInfo = new UserRegistrationModel
             {
                 Username = "levani",
                 Email = "lshen20@freeuni.edu.ge",
@@ -86,7 +86,7 @@ namespace Tests.CoreServiceTests
                 ConfirmedPassword = weakPassword,
             };
 
-            InvalidTestHelper(RegisterStatus.WeakPassword, userInfo);
+            InvalidTestHelper(RegistrationStatus.WeakPassword, userInfo);
         }
 
         [Fact]
@@ -96,16 +96,16 @@ namespace Tests.CoreServiceTests
             var dbMock = new Mock<IDb>();
             var tokenService = new Mock<ITokenService>();
 
-            dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationInfo>()))
-                .Callback<UserRegistrationInfo>(userInfo => userDb.Add(userInfo.Username));
+            dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationModel>()))
+                .Callback<UserRegistrationModel>(userInfo => userDb.Add(userInfo.Username));
 
             dbMock.Setup(x => x.ContainsUser(It.IsAny<string>())).Returns<string>(userDb.Contains);
 
             var core = new CoreService(dbMock.Object, tokenService.Object);
 
-            _ = core.Register(new RegisterRequest
+            _ = core.Register(new RegistrationRequest
             {
-                UserInfo = new UserRegistrationInfo
+                UserInfo = new UserRegistrationModel
                 {
                     Username = "levani",
                     Email = "lshen20@freeuni.edu.ge",
@@ -114,9 +114,9 @@ namespace Tests.CoreServiceTests
                 }
             });
 
-            var registerResponse = core.Register(new RegisterRequest
+            var registerResponse = core.Register(new RegistrationRequest
             {
-                UserInfo = new UserRegistrationInfo
+                UserInfo = new UserRegistrationModel
                 {
                     Username = "levani",
                     Email = "lshen20@freeuni.edu.ge",
@@ -125,21 +125,21 @@ namespace Tests.CoreServiceTests
                 }
             });
 
-            Assert.Equal(RegisterStatus.UsernameAlreadyTaken, registerResponse.Status);
+            Assert.Equal(RegistrationStatus.UsernameAlreadyTaken, registerResponse.Status);
         }
 
-        private static void InvalidTestHelper(RegisterStatus expectedStatus, UserRegistrationInfo userInfo)
+        private static void InvalidTestHelper(RegistrationStatus expectedStatus, UserRegistrationModel userInfo)
         {
             var userDb = new List<string>();
             var dbMock = new Mock<IDb>();
             var tokenService = new Mock<ITokenService>();
 
-            dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationInfo>()))
-                .Callback<UserRegistrationInfo>(userInfo => userDb.Add(userInfo.Username));
+            dbMock.Setup(x => x.AddNewUser(It.IsAny<UserRegistrationModel>()))
+                .Callback<UserRegistrationModel>(userInfo => userDb.Add(userInfo.Username));
 
             var core = new CoreService(dbMock.Object, tokenService.Object);
 
-            var registerResponse = core.Register(new RegisterRequest
+            var registerResponse = core.Register(new RegistrationRequest
             {
                 UserInfo = userInfo
             });

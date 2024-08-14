@@ -1,5 +1,5 @@
 ﻿using Core.Core;
-using Core.Core.Helpers;
+using Core.Core.Services.IServices;
 using Core.Db;
 using Core.Enums;
 using Core.Models;
@@ -75,7 +75,7 @@ namespace Tests.CoreServiceTests
             var tokenService = new Mock<ITokenService>();
             tokenService.Setup(x => x.IsTokenValid()).Returns(true);
             var fakeDb = new List<AccountInfo>();
-            db.Setup(x => x.AddAccount(It.IsAny<AccountInfo>())).Callback(fakeDb.Add).Returns(true);
+            db.Setup(x => x.AddAccount(It.IsAny<string>(), It.IsAny<AccountInfo>())).Callback(fakeDb.Add).Returns(true);
 
             var core = new CoreService(db.Object, tokenService.Object);
 

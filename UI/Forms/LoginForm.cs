@@ -33,7 +33,7 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            new RegistrationForm(_core).Show();
+            //new RegistrationForm(_core).Show();
         }
 
         private void LoginButtonClicked(object? sender, EventArgs e)

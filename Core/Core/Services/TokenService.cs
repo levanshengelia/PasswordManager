@@ -1,4 +1,6 @@
-﻿namespace Core.Core.Helpers
+﻿using Core.Core.Services.IServices;
+
+namespace Core.Core.Helpers
 {
     public class TokenService : ITokenService
     {

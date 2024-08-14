@@ -1,4 +1,4 @@
-﻿namespace Core.Core.Helpers
+﻿namespace Core.Core.Services.IServices
 {
     public interface ITokenService
     {

@@ -3,6 +3,7 @@ using Core.Enums;
 using Core.Models;
 using Core.Requests;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace UI.Forms
 {
@@ -31,26 +32,27 @@ namespace UI.Forms
             {
                 if (addNewAccountForm.ShowDialog() == DialogResult.OK)
                 {
-                    string appName = addNewAccountForm.AppName;
-                    string userName = addNewAccountForm.UserName;
-                    string password = addNewAccountForm.Password;
-
-                    var newAccountInfo = new AccountInfo
+                    var addAccountRequest = new AddAccountRequest
                     {
-                        Name = appName,
-                        Username = userName,
-                        EncryptedPassword = password,
+                        AccountInfo = new AccountInfo
+                        {
+                            Name = addNewAccountForm.AppName,
+                            Username = addNewAccountForm.UserName,
+                            EncryptedPassword = addNewAccountForm.Password,
+                        },
                     };
 
-                    //todo: build AddAccountRequest (using newAccountInfo)
-
-                    var addAccountResponse = _core.AddAccount(new());
+                    var addAccountResponse = _core.AddAccount(addAccountRequest);
 
                     switch (addAccountResponse.Status)
                     {
                         case AddAccountStatus.Success:
                             Grid.Rows.Add(addAccountResponse.NewlyAddedAccountInfo.Name, addAccountResponse.NewlyAddedAccountInfo.Username);
                             MessageBox.Show("New account added successfully");
+                            break;
+                        case AddAccountStatus.InvalidToken:
+                            MessageBox.Show("Your session expired, log in again");
+                            RedirectToLoginForm();
                             break;
                         case AddAccountStatus.AccountUsernamePairAlreadyExists:
                             MessageBox.Show("Account with that username is already exists");
@@ -95,23 +97,54 @@ namespace UI.Forms
                     ApplicationName = applicationName
                 });
 
-                if (getPasswordResponse.Status == GetPasswordStatus.Success)
+                switch (getPasswordResponse.Status)
                 {
-                    Clipboard.SetText(getPasswordResponse.Password);
-                    _ = Task.Run(() =>
-                    {
-                        Thread.Sleep(10_000);
-                        Clipboard.Clear();
-                    });
+                    case GetPasswordStatus.Success:
+                        Clipboard.SetText(getPasswordResponse.Password);
+                        _ = Task.Run(() =>
+                        {
+                            Thread.Sleep(10_000);
+                            Clipboard.Clear();
+                        });
+                        break;
+                    case GetPasswordStatus.ApplicationDoesNotExist:
+                        MessageBox.Show("Application does not exist, try again");
+                        break;
+                    case GetPasswordStatus.InvalidToken:
+                        MessageBox.Show("Your session expired, log in again");
+                        RedirectToLoginForm();
+                        break;
+                    case GetPasswordStatus.ServerError:
+                        MessageBox.Show("Internal error, try again");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Invalid status value");
                 }
             }
             
             if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
             {
-                _core.DeleteAccount(new DeleteAccountRequest
+                var deleteAccountResponse = _core.DeleteAccount(new DeleteAccountRequest
                 {
                     AccountName = applicationName,
                 });
+
+                switch (deleteAccountResponse.Status)
+                {
+                    case DeleteAccountStatus.Success:
+                        Grid.Rows.Remove(Grid.Rows[e.RowIndex]); 
+                        break;
+                    case DeleteAccountStatus.AccountDoesNotExist:
+                        MessageBox.Show("Application does not exist, try again");
+                        break;
+                    case DeleteAccountStatus.InvalidToken:
+                        MessageBox.Show("Your session expired, log in again");
+                        RedirectToLoginForm();
+                        break;
+                    case DeleteAccountStatus.ServerError:
+                        MessageBox.Show("Internal error, try again");
+                        break;
+                }
             }
         }
     }

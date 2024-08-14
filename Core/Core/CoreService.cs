@@ -1,4 +1,5 @@
 ﻿using Core.Core.Helpers;
+using Core.Core.Services.IServices;
 using Core.Db;
 using Core.Enums;
 using Core.Requests;
@@ -6,41 +7,45 @@ using Core.Responses;
 
 namespace Core.Core
 {
-    public class CoreService(IDb db, ITokenService tokenService) : ICore
+    public class CoreService(IDb db, ITokenService tokenService, ICryptoService cryptoService) : ICore
     {
+        // Move to safer place
+        private const string Key = "bla";
+
         private readonly IDb _db = db;
         private readonly ITokenService _tokenService = tokenService;
+        private readonly ICryptoService _cryptoService = cryptoService;
 
         private string _username = null!;
 
-        public RegisterResponse Register(RegisterRequest request)
-        {
-            try
-            {
-                var userInfo = request.UserInfo;
-                var validationResult = ModelValidator.ValidateUserRegistrationInfo(userInfo, _db);
+        //public RegistrationResponse Register(RegistrationRequest request)
+        //{
+        //    try
+        //    {
+        //        var userInfo = request.UserInfo;
+        //        var validationResult = PasswordValidator.ValidateUserRegistrationInfo(userInfo, _db);
 
-                var response = new RegisterResponse
-                {
-                    Status = validationResult,
-                };
+        //        var response = new RegistrationResponse
+        //        {
+        //            Status = validationResult,
+        //        };
 
-                if (validationResult == RegisterStatus.Success)
-                {
-                    _db.AddNewUser(userInfo);
-                }
+        //        if (validationResult == RegistrationStatus.Success)
+        //        {
+        //            _db.AddNewUser(userInfo);
+        //        }
 
-                return response;
-            }
-            catch
-            {
-                //log
-                return new RegisterResponse
-                {
-                    Status = RegisterStatus.ServerError,
-                };
-            }
-        }
+        //        return response;
+        //    }
+        //    catch
+        //    {
+        //        //log
+        //        return new RegistrationResponse
+        //        {
+        //            Status = RegistrationStatus.ServerError,
+        //        };
+        //    }
+        //}
 
         public LoginResponse Login(LoginRequest request)
         {
@@ -129,7 +134,7 @@ namespace Core.Core
                     };
                 }
 
-                var added = _db.AddAccount(request.AccountInfo);
+                var added = _db.AddAccount(_username, request.AccountInfo);
 
                 if (!added)
                 {
@@ -215,7 +220,13 @@ namespace Core.Core
                     };
                 }
 
-                Clipboard.SetText("fsd")
+                var encryptedPassword = _db.GetEncryptedPassword(_username, request.ApplicationName);
+
+                return new GetPasswordResponse
+                {
+                    Status = GetPasswordStatus.Success,
+                    Password = _cryptoService.Decrypt(encryptedPassword, Key)
+                };
             }
             catch
             {

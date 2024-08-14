@@ -1,7 +1,6 @@
-using Core.Core;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using UI.Configurations;
-using UI.Forms;
 
 namespace UI;
 
@@ -19,10 +18,10 @@ static class Program
 
         var serviceProvider = ServiceProviderBuilder.BuildServiceProvider();
 
-        var core = serviceProvider.GetRequiredService<ICore>();
+        var mediator = serviceProvider.GetRequiredService<IMediator>();
 
-        //new RegistrationForm(core).Show();
-        new HomeForm(new(), core).Show();
+        new RegistrationForm(mediator).Show();
+        //new HomeForm(new(), core).Show();
 
         Application.Run();
 
