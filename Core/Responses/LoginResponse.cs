@@ -1,10 +1,12 @@
 ﻿using Core.Enums;
+using Core.Responses.Contracts;
 
 namespace Core.Responses
 {
-    public record LoginResponse
+    public class LoginResponse : IResponseResult
     {
-        public LoginStatus Status { get; set; }
+        public ResponseStatus Status { get; set; }
+        public string? ErrorMessage { get; set; }
         public string Token { get; set; } = null!;
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Core.Db;
 using Core.Enums;
 using Core.Responses;
+using Db.Models;
+using Db.Repositories.IRepositories;
 using MediatR;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Core.Requests
 {
@@ -15,26 +17,38 @@ namespace Core.Requests
         public string Password { get; set; } = null!;
 
         public string ConfirmedPassword { get; set; } = null!;
+
+        public UserRegistrationInfo ConvertToUserRegistartionInfo()
+        {
+            return new UserRegistrationInfo
+            {
+                Email = Email,
+                Username = Username,
+                Password = Password,
+            };
+        }
     }
 
     public class RegistrationRequestHandler : IRequestHandler<RegistrationRequest, RegistrationResponse>
     {
-        private readonly ILogger _logger;
-        private readonly IDb _db;
+        private readonly ILogger<RegistrationRequestHandler> _logger;
+        private readonly IUserRepository _userRepository;
 
-        public RegistrationRequestHandler(ILogger logger, IDb db)
+        public RegistrationRequestHandler(ILogger<RegistrationRequestHandler> logger, IUserRepository userRepository)
         {
             _logger = logger;
-            _db = db;
+            _userRepository = userRepository;
         }
 
         public async Task<RegistrationResponse> Handle(RegistrationRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                await _db.RegisterUser(request);
+                var userRegistartionInfo = request.ConvertToUserRegistartionInfo();
 
-                _logger.Information($"New user named {request.Username} has registered");
+                await _userRepository.Register(userRegistartionInfo);
+
+                _logger.LogInformation("New user named {Username} has registered", request.Username);
 
                 return new RegistrationResponse
                 {
@@ -45,7 +59,7 @@ namespace Core.Requests
             {
                 var errorMessage = "Internal error during the registration of new user";
 
-                _logger.Error(ex, errorMessage);
+                _logger.LogError(ex, errorMessage);
                 
                 return new RegistrationResponse
                 {

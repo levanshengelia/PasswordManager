@@ -1,6 +1,6 @@
 ﻿namespace Tests.DbTests
 {
-    internal class Class1
+    public class UserRepositoryTests
     {
 
     }

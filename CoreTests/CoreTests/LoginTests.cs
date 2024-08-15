@@ -25,7 +25,7 @@ namespace Tests.CoreServiceTests
             {
                 UserInfo = new UserLoginInfo
                 {
-                    UserName = "levani",
+                    Username = "levani",
                     Password = "Levani123$%",
                 }
             });
@@ -49,7 +49,7 @@ namespace Tests.CoreServiceTests
             {
                 UserInfo = new UserLoginInfo
                 {
-                    UserName = "levani",
+                    Username = "levani",
                     Password = "Levani123$%",
                 }
             });

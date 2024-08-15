@@ -1,12 +1,6 @@
-﻿using Core.Core;
-using Core.Enums;
-using Core.Models;
+﻿using Core.Enums;
 using Core.Requests;
 using MediatR;
-using System.Runtime.CompilerServices;
-using UI.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace UI
 {
