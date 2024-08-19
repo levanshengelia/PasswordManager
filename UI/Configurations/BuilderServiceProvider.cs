@@ -1,21 +1,24 @@
-﻿using Core.Core;
-using Core.Core.Helpers;
-using Core.Core.Services;
-using Core.Core.Services.IServices;
-using Core.RequestValidations.Behaviors;
+﻿using Core.RequestValidations.Behaviors;
 using Core.RequestValidations.FluentValidations;
+using Core.Responses.Contracts;
+using Core.Services;
+using Core.Services.IServices;
+using Db.Repositories;
+using Db.Repositories.IRepositories;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System.Configuration;
 
 
 namespace UI.Configurations;
 
 public static class ServiceProviderBuilder
 {
-    public static IServiceProvider BuildServiceProvider()
+    public static IServiceProvider BuildServiceProvider(IConfiguration configuration)
     {
         var serviceCollection = new ServiceCollection();
 
@@ -24,18 +27,23 @@ public static class ServiceProviderBuilder
                .WriteTo.Console()
                .CreateLogger();
 
-        serviceCollection.AddSingleton<ITokenService, TokenService>();
-        serviceCollection.AddSingleton<ICryptoService, CryptoService>();
-
         serviceCollection.AddLogging(loggingBuilder =>
         {
             loggingBuilder.ClearProviders();
             loggingBuilder.AddSerilog();
         });
 
+        serviceCollection.AddSingleton<IUserRepository>(provider =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection")!;
+            return new UserRepository(connectionString);
+        });
+
+        serviceCollection.AddSingleton<ICryptographyService, CryptographyService>();
+
         serviceCollection.AddMediatR(config =>
         {
-            config.RegisterServicesFromAssembly(typeof(ICore).Assembly);
+            config.RegisterServicesFromAssembly(typeof(IResponseResult).Assembly);
             config.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
 

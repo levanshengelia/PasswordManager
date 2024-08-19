@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Configuration;
 using UI.Configurations;
 
 namespace UI;
@@ -16,7 +18,13 @@ static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
 
-        var serviceProvider = ServiceProviderBuilder.BuildServiceProvider();
+        var builder = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+        IConfiguration configuration = builder.Build();
+
+        var serviceProvider = ServiceProviderBuilder.BuildServiceProvider(configuration);
 
         var mediator = serviceProvider.GetRequiredService<IMediator>();
 

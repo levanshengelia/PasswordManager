@@ -1,17 +1,11 @@
-﻿using Core.Core;
-using Core.Enums;
-using Core.Models;
-using System.ComponentModel;
+﻿using Core.Models;
 
 namespace UI.Forms
 {
     public partial class LoginForm : Form
     {
-        private readonly ICore _core;
-
-        public LoginForm(ICore core)
+        public LoginForm()
         {
-            _core = core;
 
             InitializeComponent();
             SetEventHandlers();
@@ -33,54 +27,54 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            new RegistrationForm(_core).Show();
+            //new RegistrationForm(_core).Show();
         }
 
         private void LoginButtonClicked(object? sender, EventArgs e)
         {
-            var userInfo = GetUserInfoFromTextBoxes();
+            //var userInfo = GetUserInfoFromTextBoxes();
 
-            //todo: build LoginRequest (using userInfo)
+            ////todo: build LoginRequest (using userInfo)
 
-            var loginResponse = _core.Login(new());
+            //var loginResponse = _core.Login(new());
 
-            switch (loginResponse.Status)
-            {
-                case LoginStatus.Success:
-                    HandleSuccessfulLogin(loginResponse.Token);
-                    break;
-                case LoginStatus.InvalidCredentials:
-                    MessageBox.Show("Invalid credentials, try again");
-                    break;
-                case LoginStatus.ServerError:
-                    MessageBox.Show("Internal server error, try again");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid status value");
-            }
+            //switch (loginResponse.Status)
+            //{
+            //    case LoginStatus.Success:
+            //        HandleSuccessfulLogin(loginResponse.Token);
+            //        break;
+            //    case LoginStatus.InvalidCredentials:
+            //        MessageBox.Show("Invalid credentials, try again");
+            //        break;
+            //    case LoginStatus.ServerError:
+            //        MessageBox.Show("Internal server error, try again");
+            //        break;
+            //    default:
+            //        throw new ArgumentOutOfRangeException("Invalid status value");
+            //}
         }
 
         private void HandleSuccessfulLogin(string token)
         {
             //todo: build GetUserAccountInfoRequest
 
-            var getUserAccountInfoResponse = _core.GetUserAccountInfo(new());
+            //var getUserAccountInfoResponse = _core.GetUserAccountInfo(new());
 
-            switch (getUserAccountInfoResponse.Status)
-            {
-                case GetUserAccountInfoStatus.Success:
-                    RedirectToHomeForm(getUserAccountInfoResponse.UserInfo);
-                    break;
-                case GetUserAccountInfoStatus.InvalidToken:
-                    MessageBox.Show("Your token is expired or is invalid, log in and try again");
-                    RedirectToLoginForm();
-                    break;
-                case GetUserAccountInfoStatus.ServerError:
-                    MessageBox.Show("Internal server error, log in and try again");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid status value");
-            }
+            //switch (getUserAccountInfoResponse.Status)
+            //{
+            //    case GetUserAccountInfoStatus.Success:
+            //        RedirectToHomeForm(getUserAccountInfoResponse.UserInfo);
+            //        break;
+            //    case GetUserAccountInfoStatus.InvalidToken:
+            //        MessageBox.Show("Your token is expired or is invalid, log in and try again");
+            //        RedirectToLoginForm();
+            //        break;
+            //    case GetUserAccountInfoStatus.ServerError:
+            //        MessageBox.Show("Internal server error, log in and try again");
+            //        break;
+            //    default:
+            //        throw new ArgumentOutOfRangeException("Invalid status value");
+            //}
         }
 
         private void RedirectToHomeForm(UserPasswordSystemInfo userInfo)
@@ -88,7 +82,7 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            new HomeForm(userInfo, _core).Show();
+//            new HomeForm(userInfo, _core).Show();
         }
 
         private void RedirectToLoginForm()
@@ -96,19 +90,19 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            new LoginForm(_core).Show();
+           // new LoginForm(_core).Show();
         }
 
-        private UserLoginInfo GetUserInfoFromTextBoxes()
-        {
-            var username = usernameFieldControl1.Username!;
-            var password = passwordFieldControl1.Password!;
+        //private UserLoginInfo GetUserInfoFromTextBoxes()
+        //{
+        //    var username = usernameFieldControl1.Username!;
+        //    var password = passwordFieldControl1.Password!;
 
-            return new UserLoginInfo
-            {
-                Username = username,
-                Password = password,
-            };
-        }
+        //    return new UserLoginInfo
+        //    {
+        //        Username = username,
+        //        Password = password,
+        //    };
+        //}
     }
 }

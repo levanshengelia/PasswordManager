@@ -1,5 +1,4 @@
-﻿using Core.Core;
-using Core.Enums;
+﻿using Core.Enums;
 using Core.Models;
 using Core.Requests;
 using System.Windows.Forms;
@@ -9,12 +8,8 @@ namespace UI.Forms
 {
     public partial class HomeForm : Form
     {
-        private readonly ICore _core;
-
-        public HomeForm(UserPasswordSystemInfo userInfo, ICore core)
+        public HomeForm(UserPasswordSystemInfo userInfo)
         {
-            _core = core;
-
             InitializeComponent();
 
             // for test
@@ -28,43 +23,43 @@ namespace UI.Forms
 
         private void AddNewAccountInfoButton_Click(object sender, EventArgs e)
         {
-            using (var addNewAccountForm = new AddNewAccountForm())
-            {
-                if (addNewAccountForm.ShowDialog() == DialogResult.OK)
-                {
-                    var addAccountRequest = new AddAccountRequest
-                    {
-                        AccountInfo = new AccountInfo
-                        {
-                            Name = addNewAccountForm.AppName,
-                            Username = addNewAccountForm.UserName,
-                            EncryptedPassword = addNewAccountForm.Password,
-                        },
-                    };
+            //using (var addNewAccountForm = new AddNewAccountForm())
+            //{
+            //    if (addNewAccountForm.ShowDialog() == DialogResult.OK)
+            //    {
+            //        var addAccountRequest = new AddAccountRequest
+            //        {
+            //            AccountInfo = new AccountInfo
+            //            {
+            //                Name = addNewAccountForm.AppName,
+            //                Username = addNewAccountForm.UserName,
+            //                EncryptedPassword = addNewAccountForm.Password,
+            //            },
+            //        };
 
-                    var addAccountResponse = _core.AddAccount(addAccountRequest);
+            //        var addAccountResponse = _core.AddAccount(addAccountRequest);
 
-                    switch (addAccountResponse.Status)
-                    {
-                        case AddAccountStatus.Success:
-                            Grid.Rows.Add(addAccountResponse.NewlyAddedAccountInfo.Name, addAccountResponse.NewlyAddedAccountInfo.Username);
-                            MessageBox.Show("New account added successfully");
-                            break;
-                        case AddAccountStatus.InvalidToken:
-                            MessageBox.Show("Your session expired, log in again");
-                            RedirectToLoginForm();
-                            break;
-                        case AddAccountStatus.AccountUsernamePairAlreadyExists:
-                            MessageBox.Show("Account with that username is already exists");
-                            break;
-                        case AddAccountStatus.ServerError:
-                            MessageBox.Show("Internal server error, try again");
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException("Invalid status value");
-                    }
-                }
-            }
+            //        switch (addAccountResponse.Status)
+            //        {
+            //            case AddAccountStatus.Success:
+            //                Grid.Rows.Add(addAccountResponse.NewlyAddedAccountInfo.Name, addAccountResponse.NewlyAddedAccountInfo.Username);
+            //                MessageBox.Show("New account added successfully");
+            //                break;
+            //            case AddAccountStatus.InvalidToken:
+            //                MessageBox.Show("Your session expired, log in again");
+            //                RedirectToLoginForm();
+            //                break;
+            //            case AddAccountStatus.AccountUsernamePairAlreadyExists:
+            //                MessageBox.Show("Account with that username is already exists");
+            //                break;
+            //            case AddAccountStatus.ServerError:
+            //                MessageBox.Show("Internal server error, try again");
+            //                break;
+            //            default:
+            //                throw new ArgumentOutOfRangeException("Invalid status value");
+            //        }
+            //    }
+            //}
         }
 
         private void LogOutButton_Click(object sender, EventArgs e)
@@ -77,7 +72,7 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            new LoginForm(_core).Show();
+            new LoginForm().Show();
         }
 
         private void Grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -88,64 +83,64 @@ namespace UI.Forms
                 return;
             }
 
-            var applicationName = (string)Grid[1, e.RowIndex].Value;
+            //var applicationName = (string)Grid[1, e.RowIndex].Value;
 
-            if (e.ColumnIndex == Grid.Columns["PasswordCopyOption"].Index)
-            {
-                var getPasswordResponse = _core.GetPassword(new GetPasswordRequest
-                {
-                    ApplicationName = applicationName
-                });
+            //if (e.ColumnIndex == Grid.Columns["PasswordCopyOption"].Index)
+            //{
+            //    var getPasswordResponse = _core.GetPassword(new GetPasswordRequest
+            //    {
+            //        ApplicationName = applicationName
+            //    });
 
-                switch (getPasswordResponse.Status)
-                {
-                    case GetPasswordStatus.Success:
-                        Clipboard.SetText(getPasswordResponse.Password);
-                        _ = Task.Run(() =>
-                        {
-                            Thread.Sleep(10_000);
-                            Clipboard.Clear();
-                        });
-                        break;
-                    case GetPasswordStatus.ApplicationDoesNotExist:
-                        MessageBox.Show("Application does not exist, try again");
-                        break;
-                    case GetPasswordStatus.InvalidToken:
-                        MessageBox.Show("Your session expired, log in again");
-                        RedirectToLoginForm();
-                        break;
-                    case GetPasswordStatus.ServerError:
-                        MessageBox.Show("Internal error, try again");
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("Invalid status value");
-                }
-            }
+            //    switch (getPasswordResponse.Status)
+            //    {
+            //        case GetPasswordStatus.Success:
+            //            Clipboard.SetText(getPasswordResponse.Password);
+            //            _ = Task.Run(() =>
+            //            {
+            //                Thread.Sleep(10_000);
+            //                Clipboard.Clear();
+            //            });
+            //            break;
+            //        case GetPasswordStatus.ApplicationDoesNotExist:
+            //            MessageBox.Show("Application does not exist, try again");
+            //            break;
+            //        case GetPasswordStatus.InvalidToken:
+            //            MessageBox.Show("Your session expired, log in again");
+            //            RedirectToLoginForm();
+            //            break;
+            //        case GetPasswordStatus.ServerError:
+            //            MessageBox.Show("Internal error, try again");
+            //            break;
+            //        default:
+            //            throw new ArgumentOutOfRangeException("Invalid status value");
+            //    }
+            //}
             
-            if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
-            {
-                var deleteAccountResponse = _core.DeleteAccount(new DeleteAccountRequest
-                {
-                    AccountName = applicationName,
-                });
+            //if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
+            //{
+            //    var deleteAccountResponse = _core.DeleteAccount(new DeleteAccountRequest
+            //    {
+            //        AccountName = applicationName,
+            //    });
 
-                switch (deleteAccountResponse.Status)
-                {
-                    case DeleteAccountStatus.Success:
-                        Grid.Rows.Remove(Grid.Rows[e.RowIndex]); 
-                        break;
-                    case DeleteAccountStatus.AccountDoesNotExist:
-                        MessageBox.Show("Application does not exist, try again");
-                        break;
-                    case DeleteAccountStatus.InvalidToken:
-                        MessageBox.Show("Your session expired, log in again");
-                        RedirectToLoginForm();
-                        break;
-                    case DeleteAccountStatus.ServerError:
-                        MessageBox.Show("Internal error, try again");
-                        break;
-                }
-            }
+            //    switch (deleteAccountResponse.Status)
+            //    {
+            //        case DeleteAccountStatus.Success:
+            //            Grid.Rows.Remove(Grid.Rows[e.RowIndex]); 
+            //            break;
+            //        case DeleteAccountStatus.AccountDoesNotExist:
+            //            MessageBox.Show("Application does not exist, try again");
+            //            break;
+            //        case DeleteAccountStatus.InvalidToken:
+            //            MessageBox.Show("Your session expired, log in again");
+            //            RedirectToLoginForm();
+            //            break;
+            //        case DeleteAccountStatus.ServerError:
+            //            MessageBox.Show("Internal error, try again");
+            //            break;
+            //    }
+            //}
         }
     }
 }

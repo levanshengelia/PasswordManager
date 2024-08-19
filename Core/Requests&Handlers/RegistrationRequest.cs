@@ -1,6 +1,7 @@
-﻿using Core.Db;
-using Core.Enums;
+﻿using Core.Enums;
 using Core.Responses;
+using Core.Services.IServices;
+using Db.DbModels;
 using Db.Models;
 using Db.Repositories.IRepositories;
 using MediatR;
@@ -17,36 +18,44 @@ namespace Core.Requests
         public string Password { get; set; } = null!;
 
         public string ConfirmedPassword { get; set; } = null!;
-
-        public UserRegistrationInfo ConvertToUserRegistartionInfo()
-        {
-            return new UserRegistrationInfo
-            {
-                Email = Email,
-                Username = Username,
-                Password = Password,
-            };
-        }
     }
 
     public class RegistrationRequestHandler : IRequestHandler<RegistrationRequest, RegistrationResponse>
     {
         private readonly ILogger<RegistrationRequestHandler> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly ICryptographyService _cryptoService;
 
-        public RegistrationRequestHandler(ILogger<RegistrationRequestHandler> logger, IUserRepository userRepository)
+        public RegistrationRequestHandler(ILogger<RegistrationRequestHandler> logger, IUserRepository userRepository, ICryptographyService cryptoService)
         {
             _logger = logger;
             _userRepository = userRepository;
+            _cryptoService = cryptoService;
         }
 
         public async Task<RegistrationResponse> Handle(RegistrationRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var userRegistartionInfo = request.ConvertToUserRegistartionInfo();
+                if (await _userRepository.GetUserByUsername(request.Username) is not null)
+                {
+                    return new RegistrationResponse
+                    {
+                        Status = ResponseStatus.Fail,
+                        ErrorMessage = "User already exists",
+                    };
+                }
 
-                await _userRepository.Register(userRegistartionInfo);
+                var encryptedPassword = _cryptoService.HashWithSHA256(request.Password);
+
+                var newUser = new User
+                {
+                    Email = request.Email,
+                    Username = request.Username,
+                    EncryptedPassword = encryptedPassword,
+                };
+
+                await _userRepository.Register(newUser);
 
                 _logger.LogInformation("New user named {Username} has registered", request.Username);
 

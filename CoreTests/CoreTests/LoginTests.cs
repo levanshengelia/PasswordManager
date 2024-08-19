@@ -1,61 +1,61 @@
-﻿using Core.Core;
-using Core.Core.Helpers;
-using Core.Db;
-using Core.Enums;
-using Core.Models;
-using Core.Requests;
-using Moq;
+﻿//using Core.Core;
+//using Core.Core.Helpers;
+//using Core.Db;
+//using Core.Enums;
+//using Core.Models;
+//using Core.Requests;
+//using Moq;
 
-namespace Tests.CoreServiceTests
-{
-    public class LoginTests
-    {
-        [Fact]
-        public void Login_ValidRequest_LogedInSuccessfully()
-        {
-            var userDb = new List<string>();
-            var dbMock = new Mock<IDb>(); 
-            var tokenService = new Mock<ITokenService>();
+//namespace Tests.CoreServiceTests
+//{
+//    public class LoginTests
+//    {
+//        [Fact]
+//        public void Login_ValidRequest_LogedInSuccessfully()
+//        {
+//            var userDb = new List<string>();
+//            var dbMock = new Mock<IDb>(); 
+//            var tokenService = new Mock<ITokenService>();
 
-            dbMock.Setup(x => x.IsCredentialsValid(It.IsAny<UserLoginInfo>())).Returns(true);
+//            dbMock.Setup(x => x.IsCredentialsValid(It.IsAny<UserLoginInfo>())).Returns(true);
 
-            var core = new CoreService(dbMock.Object, tokenService.Object);
+//            var core = new CoreService(dbMock.Object, tokenService.Object);
 
-            var loginResponse = core.Login(new LoginRequest
-            {
-                UserInfo = new UserLoginInfo
-                {
-                    Username = "levani",
-                    Password = "Levani123$%",
-                }
-            });
+//            var loginResponse = core.Login(new LoginRequest
+//            {
+//                UserInfo = new UserLoginInfo
+//                {
+//                    Username = "levani",
+//                    Password = "Levani123$%",
+//                }
+//            });
 
-            Assert.Equal(LoginStatus.Success, loginResponse.Status);
-            Assert.NotNull(loginResponse.Token);
-        }
+//            Assert.Equal(LoginStatus.Success, loginResponse.Status);
+//            Assert.NotNull(loginResponse.Token);
+//        }
 
-        [Fact]
-        public void Login_InValidRequest_LogedInUnsuccessfully()
-        {
-            var userDb = new List<string>();
-            var dbMock = new Mock<IDb>();
-            var tokenService = new Mock<ITokenService>();
+//        [Fact]
+//        public void Login_InValidRequest_LogedInUnsuccessfully()
+//        {
+//            var userDb = new List<string>();
+//            var dbMock = new Mock<IDb>();
+//            var tokenService = new Mock<ITokenService>();
 
-            dbMock.Setup(x => x.IsCredentialsValid(It.IsAny<UserLoginInfo>())).Returns(false);
+//            dbMock.Setup(x => x.IsCredentialsValid(It.IsAny<UserLoginInfo>())).Returns(false);
 
-            var core = new CoreService(dbMock.Object, tokenService.Object);
+//            var core = new CoreService(dbMock.Object, tokenService.Object);
 
-            var loginResponse = core.Login(new LoginRequest
-            {
-                UserInfo = new UserLoginInfo
-                {
-                    Username = "levani",
-                    Password = "Levani123$%",
-                }
-            });
+//            var loginResponse = core.Login(new LoginRequest
+//            {
+//                UserInfo = new UserLoginInfo
+//                {
+//                    Username = "levani",
+//                    Password = "Levani123$%",
+//                }
+//            });
 
-            Assert.Equal(LoginStatus.InvalidCredentials, loginResponse.Status);
-            Assert.Null(loginResponse.Token);
-        }
-    }
-}
+//            Assert.Equal(LoginStatus.InvalidCredentials, loginResponse.Status);
+//            Assert.Null(loginResponse.Token);
+//        }
+//    }
+//}

@@ -1,7 +1,4 @@
-﻿using Core.Core;
-using System.Runtime.CompilerServices;
-
-namespace UI.Forms;
+﻿namespace UI.Forms;
 
 public partial class AddNewAccountForm : Form
 {
