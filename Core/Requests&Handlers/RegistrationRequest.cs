@@ -37,7 +37,9 @@ namespace Core.Requests
         {
             try
             {
-                if (await _userRepository.GetUserByUsername(request.Username) is not null)
+                var userWithThatUsername = await _userRepository.GetUserByUsername(request.Username);
+
+                if (userWithThatUsername is not null)
                 {
                     return new RegistrationResponse
                     {
