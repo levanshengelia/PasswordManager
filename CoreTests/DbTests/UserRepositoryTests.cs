@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Db.DbModels;
+using Db.Models;
 using Db.Repositories;
 using Microsoft.Data.Sqlite;
 
@@ -13,7 +14,8 @@ namespace Tests.DbTests
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Username TEXT NOT NULL,
                         Email TEXT NOT NULL,
-                        EncryptedPassword TEXT NOT NULL
+                        PasswordHash TEXT NOT NULL,
+                        RegisteredOn TEXT NOT NULL
                     );";
 
         [Fact]
@@ -41,11 +43,12 @@ namespace Tests.DbTests
 
             var testUsername = "levani";
 
-            connection.Execute("INSERT INTO Users (Username, Email, EncryptedPassword) VALUES (@Username, @Email, @EncryptedPassword);", 
-                new {Username = testUsername, Email = "levani@gmail.com", EncryptedPassword = "bla"});
+            connection.Execute("INSERT INTO Users (Username, Email, PasswordHash, RegisteredOn) " +
+                "VALUES (@Username, @Email, @PasswordHash, @RegisteredOn);",
+                new { Username = testUsername, Email = "levani@gmail.com", PasswordHash = "bla", RegisteredOn = DateTime.Now });
 
             var user = await userRepository.GetUserByUsername(testUsername);
-            
+
             Assert.NotNull(user);
             Assert.Equal(testUsername, user.Username);
         }
@@ -60,19 +63,68 @@ namespace Tests.DbTests
 
             var userRepository = new UserRepository(_connectionString);
 
-            for(var i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 userRepository.Register(new User
                 {
                     Username = $"test {i}",
                     Email = "test@gmail.com",
-                    EncryptedPassword = "bla",
+                    PasswordHash = "bla",
                 });
             }
 
             var count = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Users");
 
             Assert.Equal(10, count);
+        }
+
+        [Fact]
+        public async Task Login_With_Invalid_Credentials_Should_Return_Null_Token()
+        {
+            using var connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+            connection.Execute(_tableCreationQuery);
+
+            var userRepository = new UserRepository(_connectionString);
+
+            var userLoginInfo = new UserLoginInfo
+            {
+                Username = "test",
+                PasswordHash = "test"
+            };
+
+            var token = await userRepository.Login(userLoginInfo);
+
+            Assert.Null(token);
+        }
+
+        [Fact]
+        public async Task Login_With_Valid_Credentials_Should_Return_Token()
+        {
+            using var connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+            connection.Execute(_tableCreationQuery);
+
+            var userRepository = new UserRepository(_connectionString);
+
+            _ = userRepository.Register(new User
+            {
+                Username = "test",
+                Email = "test@gmail.com",
+                PasswordHash = "test",
+            });
+
+            var userLoginInfo = new UserLoginInfo
+            {
+                Username = "test",
+                PasswordHash = "test"
+            };
+
+            var token = await userRepository.Login(userLoginInfo);
+
+            Assert.NotNull(token);
         }
     }
 }

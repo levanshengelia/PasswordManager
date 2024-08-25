@@ -1,4 +1,5 @@
-﻿using Core.RequestValidations.Behaviors;
+﻿using Core;
+using Core.RequestValidations.Behaviors;
 using Core.RequestValidations.FluentValidations;
 using Core.Responses.Contracts;
 using Core.Services;
@@ -42,11 +43,11 @@ public static class ServiceProviderBuilder
 
         serviceCollection.AddMediatR(config =>
         {
-            config.RegisterServicesFromAssembly(typeof(IResponseResult).Assembly);
+            config.RegisterServicesFromAssembly(typeof(MediatorAssemblyMarker).Assembly);
             config.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
 
-        serviceCollection.AddValidatorsFromAssemblyContaining<RegistrationValidator>();
+        serviceCollection.AddValidatorsFromAssembly(typeof(MediatorAssemblyMarker).Assembly);
 
         return serviceCollection.BuildServiceProvider();
     }

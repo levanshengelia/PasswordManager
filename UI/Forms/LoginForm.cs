@@ -1,11 +1,17 @@
-﻿using Core.Models;
+﻿using Core.Enums;
+using Core.Models;
+using Core.Requests;
+using MediatR;
 
 namespace UI.Forms
 {
     public partial class LoginForm : Form
     {
-        public LoginForm()
+        private readonly IMediator _mediator;
+
+        public LoginForm(IMediator mediator)
         {
+            _mediator = mediator;
 
             InitializeComponent();
             SetEventHandlers();
@@ -27,54 +33,35 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            //new RegistrationForm(_core).Show();
+            new RegistrationForm(_mediator).Show();
         }
 
-        private void LoginButtonClicked(object? sender, EventArgs e)
+        private async void LoginButtonClicked(object? sender, EventArgs e)
         {
-            //var userInfo = GetUserInfoFromTextBoxes();
+            var loginRequest = new LoginRequest
+            {
+                Username = usernameFieldControl1.Username!,
+                Password = passwordFieldControl1.Password!,
+            };
 
-            ////todo: build LoginRequest (using userInfo)
+            var loginResponse = await _mediator.Send(loginRequest);
 
-            //var loginResponse = _core.Login(new());
-
-            //switch (loginResponse.Status)
-            //{
-            //    case LoginStatus.Success:
-            //        HandleSuccessfulLogin(loginResponse.Token);
-            //        break;
-            //    case LoginStatus.InvalidCredentials:
-            //        MessageBox.Show("Invalid credentials, try again");
-            //        break;
-            //    case LoginStatus.ServerError:
-            //        MessageBox.Show("Internal server error, try again");
-            //        break;
-            //    default:
-            //        throw new ArgumentOutOfRangeException("Invalid status value");
-            //}
+            switch (loginResponse.Status)
+            {
+                case ResponseStatus.Success:
+                    HandleSuccessfulLogin(loginResponse.Token);
+                    break;
+                case ResponseStatus.Fail:
+                    MessageBox.Show(loginResponse.ErrorMessage);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid status value");
+            }
         }
 
         private void HandleSuccessfulLogin(string token)
         {
             //todo: build GetUserAccountInfoRequest
-
-            //var getUserAccountInfoResponse = _core.GetUserAccountInfo(new());
-
-            //switch (getUserAccountInfoResponse.Status)
-            //{
-            //    case GetUserAccountInfoStatus.Success:
-            //        RedirectToHomeForm(getUserAccountInfoResponse.UserInfo);
-            //        break;
-            //    case GetUserAccountInfoStatus.InvalidToken:
-            //        MessageBox.Show("Your token is expired or is invalid, log in and try again");
-            //        RedirectToLoginForm();
-            //        break;
-            //    case GetUserAccountInfoStatus.ServerError:
-            //        MessageBox.Show("Internal server error, log in and try again");
-            //        break;
-            //    default:
-            //        throw new ArgumentOutOfRangeException("Invalid status value");
-            //}
         }
 
         private void RedirectToHomeForm(UserPasswordSystemInfo userInfo)
@@ -82,7 +69,7 @@ namespace UI.Forms
             Close();
             Dispose();
 
-//            new HomeForm(userInfo, _core).Show();
+            // new HomeForm(userInfo, _core).Show();
         }
 
         private void RedirectToLoginForm()
@@ -90,19 +77,7 @@ namespace UI.Forms
             Close();
             Dispose();
 
-           // new LoginForm(_core).Show();
+            new LoginForm(_mediator).Show();
         }
-
-        //private UserLoginInfo GetUserInfoFromTextBoxes()
-        //{
-        //    var username = usernameFieldControl1.Username!;
-        //    var password = passwordFieldControl1.Password!;
-
-        //    return new UserLoginInfo
-        //    {
-        //        Username = username,
-        //        Password = password,
-        //    };
-        //}
     }
 }

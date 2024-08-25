@@ -26,7 +26,7 @@
 //                UserInfo = new UserLoginInfo
 //                {
 //                    Username = "levani",
-//                    Password = "Levani123$%",
+//                    PasswordHash = "Levani123$%",
 //                }
 //            });
 
@@ -50,7 +50,7 @@
 //                UserInfo = new UserLoginInfo
 //                {
 //                    Username = "levani",
-//                    Password = "Levani123$%",
+//                    PasswordHash = "Levani123$%",
 //                }
 //            });
 

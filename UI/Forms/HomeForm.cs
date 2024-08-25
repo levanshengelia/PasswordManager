@@ -33,7 +33,7 @@ namespace UI.Forms
             //            {
             //                Name = addNewAccountForm.AppName,
             //                Username = addNewAccountForm.UserName,
-            //                EncryptedPassword = addNewAccountForm.Password,
+            //                PasswordHash = addNewAccountForm.PasswordHash,
             //            },
             //        };
 
@@ -72,7 +72,7 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            new LoginForm().Show();
+            //new LoginForm().Show();
         }
 
         private void Grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -95,7 +95,7 @@ namespace UI.Forms
             //    switch (getPasswordResponse.Status)
             //    {
             //        case GetPasswordStatus.Success:
-            //            Clipboard.SetText(getPasswordResponse.Password);
+            //            Clipboard.SetText(getPasswordResponse.PasswordHash);
             //            _ = Task.Run(() =>
             //            {
             //                Thread.Sleep(10_000);

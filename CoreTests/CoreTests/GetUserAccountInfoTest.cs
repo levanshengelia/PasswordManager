@@ -19,7 +19,7 @@
 //            tokenService.Setup(x => x.IsTokenValid()).Returns(true);
 //            db.Setup(x => x.GetUserInfo(It.IsAny<string>())).Returns(new UserPasswordSystemInfo
 //            {
-//                AccountInfos = [ new AccountInfo { Name = "facebook", Username = "levani", EncryptedPassword = "fakePassword" }],
+//                AccountInfos = [ new AccountInfo { Name = "facebook", Username = "levani", PasswordHash = "fakePassword" }],
 //            });
 
 //            var core = new CoreService(db.Object, tokenService.Object);
@@ -41,7 +41,7 @@
 
 //            db.Setup(x => x.GetUserInfo(It.IsAny<string>())).Returns(new UserPasswordSystemInfo
 //            {
-//                AccountInfos = [new AccountInfo { Name = "facebook", Username = "levani", EncryptedPassword = "fakePassword" }],
+//                AccountInfos = [new AccountInfo { Name = "facebook", Username = "levani", PasswordHash = "fakePassword" }],
 //            });
 
 //            var core = new CoreService(db.Object, tokenService.Object);

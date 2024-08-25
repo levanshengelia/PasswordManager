@@ -54,7 +54,7 @@ namespace Core.Requests
                 {
                     Email = request.Email,
                     Username = request.Username,
-                    EncryptedPassword = encryptedPassword,
+                    PasswordHash = encryptedPassword,
                 };
 
                 await _userRepository.Register(newUser);

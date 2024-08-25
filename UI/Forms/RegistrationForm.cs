@@ -1,6 +1,7 @@
 ﻿using Core.Enums;
 using Core.Requests;
 using MediatR;
+using UI.Forms;
 
 namespace UI
 {
@@ -58,7 +59,7 @@ namespace UI
             Close();
             Dispose();
 
-            //new LoginForm(_core).Show();
+            new LoginForm(_mediator).Show();
         }
     }
 }

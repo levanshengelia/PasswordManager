@@ -38,7 +38,7 @@ namespace Tests.CoreTests.RequestHandlerTests
 
             Assert.Equal(ResponseStatus.Success, result.Status);
             var newUser = Assert.Single(dbList);
-            Assert.Equal("EncryptedPassword", newUser.EncryptedPassword);
+            Assert.Equal("EncryptedPassword", newUser.PasswordHash);
         }
 
         [Fact]

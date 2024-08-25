@@ -25,7 +25,7 @@
 //            {
 //                Name = "facebook",
 //                Username = "levani",
-//                EncryptedPassword = "fakePassword"
+//                PasswordHash = "fakePassword"
 //            };
 
 //            var addAccountResponse = core.AddAccount(new AddAccountRequest 
@@ -55,7 +55,7 @@
 //            {
 //                Name = "facebook",
 //                Username = "levani",
-//                EncryptedPassword = "fakePassword"
+//                PasswordHash = "fakePassword"
 //            };
 
 //            var addAccountResponse = core.AddAccount(new AddAccountRequest
@@ -83,7 +83,7 @@
 //            {
 //                Name = "facebook",
 //                Username = "levani",
-//                EncryptedPassword = "fakePassword"
+//                PasswordHash = "fakePassword"
 //            };
 
 //            db.Setup(x => x.ContainsAccount(It.IsAny<string>(), accountInfo.Name)).Returns(true);

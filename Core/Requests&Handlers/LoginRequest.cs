@@ -1,5 +1,6 @@
 ﻿using Core.Enums;
 using Core.Responses;
+using Core.Services.IServices;
 using Db.Models;
 using Db.Repositories.IRepositories;
 using MediatR;
@@ -11,35 +12,41 @@ namespace Core.Requests
     {
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
-
-        public UserLoginInfo ConvertToUserLoginInfo()
-        {
-            return new UserLoginInfo
-            {
-                Username = Username,
-                Password = Password,
-            };
-        }
     }
 
     public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResponse>
     {
         private readonly ILogger<LoginRequestHandler> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly ICryptographyService _cryptoService;
 
-        public LoginRequestHandler(ILogger<LoginRequestHandler> logger, IUserRepository userRepository)
+        public LoginRequestHandler(ILogger<LoginRequestHandler> logger, IUserRepository userRepository, ICryptographyService cryptoService)
         {
             _logger = logger;
             _userRepository = userRepository;
+            _cryptoService = cryptoService;
         }
 
         public async Task<LoginResponse> Handle(LoginRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var userRegistartionInfo = request.ConvertToUserLoginInfo();
+                var userLoginInfo = new UserLoginInfo
+                {
+                    Username = request.Username,
+                    PasswordHash = _cryptoService.HashWithSHA256(request.Password)
+                };
 
-                var token = await _userRepository.Login(userRegistartionInfo);
+                var token = await _userRepository.Login(userLoginInfo);
+
+                if (token is null)
+                {
+                    return new LoginResponse
+                    {
+                        Status = ResponseStatus.Fail,
+                        ErrorMessage = "Invalid credentials",
+                    };
+                }
 
                 _logger.LogInformation("{Username} has logged in", request.Username);
 

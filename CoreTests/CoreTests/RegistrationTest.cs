@@ -23,7 +23,7 @@
 //                {
 //                    Username = "levani",
 //                    Email = "lshen20@freeuni.edu.ge",
-//                    Password = "Levani123$%",
+//                    PasswordHash = "Levani123$%",
 //                    ConfirmedPassword = "Levani123$%",
 //                }
 //            });
@@ -40,7 +40,7 @@
 //            {
 //                Username = "levani",
 //                Email = "lshen20@freeuni.edu.ge",
-//                Password = "kukaracha",
+//                PasswordHash = "kukaracha",
 //                ConfirmedPassword = "Levani123$%",
 //            };
 
@@ -58,7 +58,7 @@
 //            {
 //                Username = "levani",
 //                Email = invalidEmail,
-//                Password = "Levani123$%",
+//                PasswordHash = "Levani123$%",
 //                ConfirmedPassword = "Levani123$%",
 //            };
 
@@ -76,7 +76,7 @@
 //            {
 //                Username = "levani",
 //                Email = "lshen20@freeuni.edu.ge",
-//                Password = weakPassword,
+//                PasswordHash = weakPassword,
 //                ConfirmedPassword = weakPassword,
 //            };
 
@@ -103,7 +103,7 @@
 //                {
 //                    Username = "levani",
 //                    Email = "lshen20@freeuni.edu.ge",
-//                    Password = "Levani123$%",
+//                    PasswordHash = "Levani123$%",
 //                    ConfirmedPassword = "Levani123$%",
 //                }
 //            });
@@ -114,7 +114,7 @@
 //                {
 //                    Username = "levani",
 //                    Email = "lshen20@freeuni.edu.ge",
-//                    Password = "Levani123$%",
+//                    PasswordHash = "Levani123$%",
 //                    ConfirmedPassword = "Levani123$%",
 //                }
 //            });
