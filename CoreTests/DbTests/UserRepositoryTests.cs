@@ -8,7 +8,7 @@ namespace Tests.DbTests
 {
     public class UserRepositoryTests
     {
-        private const string _connectionString = "Data Source=:memory:;Mode=Memory;Cache=Shared";
+        private const string _connectionString = "Data Source=dbForUserRepo;Mode=Memory;Cache=Shared";
         private const string _tableCreationQuery = @"
                     CREATE TABLE Users (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -125,6 +125,47 @@ namespace Tests.DbTests
             var token = await userRepository.Login(userLoginInfo);
 
             Assert.NotNull(token);
+        }
+        
+        [Fact]
+        public async Task With_Valid_Token_IsValidToken_Should_Return_True()
+        {
+            using var connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+            connection.Execute(_tableCreationQuery);
+
+            var userRepository = new UserRepository(_connectionString);
+
+            _ = userRepository.Register(new User
+            {
+                Username = "test",
+                Email = "test@gmail.com",
+                PasswordHash = "test",
+            });
+
+            var userLoginInfo = new UserLoginInfo
+            {
+                Username = "test",
+                PasswordHash = "test"
+            };
+
+            var token = await userRepository.Login(userLoginInfo);
+
+            Assert.True(await userRepository.IsTokenValid(token!));
+        } 
+        
+        [Fact]
+        public async Task With_Non_Existent_Token_IsValidToken_Should_Return_False()
+        {
+            using var connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+            connection.Execute(_tableCreationQuery);
+
+            var userRepository = new UserRepository(_connectionString);
+
+            Assert.False(await userRepository.IsTokenValid("token"));
         }
     }
 }

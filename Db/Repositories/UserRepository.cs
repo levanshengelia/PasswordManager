@@ -80,5 +80,29 @@ namespace Db.Repositories
                 return await connection.QueryFirstOrDefaultAsync<User>(query, new { Username = username });
             }
         }
+
+        public Task<bool> IsTokenValid(string token)
+        {
+            var tokenContainer = _tokenContainers.FirstOrDefault(x => x.Value.Token == token);
+
+            if (tokenContainer.Value is null)
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(tokenContainer.Value.ExpirationDateTime > DateTime.Now);
+        }
+
+        public Task<int?> GetUserIdByToken(string token)
+        {
+            var tokenContainer = _tokenContainers.FirstOrDefault(x => x.Value.Token == token);
+
+            if (tokenContainer.Value is null)
+            {
+                return Task.FromResult<int?>(null);
+            }
+
+            return Task.FromResult<int?>(tokenContainer.Key);
+        }
     }
 }

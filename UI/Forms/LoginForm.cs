@@ -1,6 +1,7 @@
 ﻿using Core.Enums;
-using Core.Models;
 using Core.Requests;
+using Core.Requests_Handlers;
+using Db.Models;
 using MediatR;
 
 namespace UI.Forms
@@ -49,7 +50,7 @@ namespace UI.Forms
             switch (loginResponse.Status)
             {
                 case ResponseStatus.Success:
-                    HandleSuccessfulLogin(loginResponse.Token);
+                    await HandleSuccessfulLogin(loginResponse.Token);
                     break;
                 case ResponseStatus.Fail:
                     MessageBox.Show(loginResponse.ErrorMessage);
@@ -59,17 +60,38 @@ namespace UI.Forms
             }
         }
 
-        private void HandleSuccessfulLogin(string token)
+        private async Task HandleSuccessfulLogin(string token)
         {
-            //todo: build GetUserAccountInfoRequest
+            var getUserAccountsInfoRequest = new GetUserAccountsRequest
+            {
+                Token = token,
+            };
+
+            var response = await _mediator.Send(getUserAccountsInfoRequest);
+
+            switch (response.Status)
+            {
+                case ResponseStatus.Success:
+                    RedirectToHomeForm(response.Accounts);
+                    break;
+                case ResponseStatus.InvalidToken:
+                    MessageBox.Show(response.ErrorMessage);
+                    RedirectToLoginForm();
+                    break;
+                case ResponseStatus.Fail:
+                    MessageBox.Show(response.ErrorMessage);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid status value");
+            }
         }
 
-        private void RedirectToHomeForm(UserPasswordSystemInfo userInfo)
-        {
+        private void RedirectToHomeForm(List<AccountInfo> accounts)
+          {
             Close();
             Dispose();
 
-            // new HomeForm(userInfo, _core).Show();
+            new HomeForm(_mediator, accounts).Show();
         }
 
         private void RedirectToLoginForm()

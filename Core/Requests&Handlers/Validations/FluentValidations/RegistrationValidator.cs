@@ -40,7 +40,7 @@ namespace Core.RequestValidations.FluentValidations
 
             var containsLowerCase = password.Any(char.IsLower);
             var containsUpperCase = password.Any(char.IsUpper);
-            var containsSymbol = password.Any(char.IsSymbol);
+            var containsSymbol = password.Any(char.IsPunctuation);
             var containsNumber = password.Any(char.IsDigit);
 
             bool[] conditions =

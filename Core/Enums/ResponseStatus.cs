@@ -4,5 +4,6 @@
     {
         Success = 1,
         Fail = 2,
+        InvalidToken = 3,
     }
 }

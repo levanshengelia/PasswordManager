@@ -38,6 +38,12 @@ public static class ServiceProviderBuilder
             var connectionString = configuration.GetConnectionString("DefaultConnection")!;
             return new UserRepository(connectionString);
         });
+        
+        serviceCollection.AddSingleton<IAccountRepository>(provider =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection")!;
+            return new AccountRepository(connectionString);
+        });
 
         serviceCollection.AddSingleton<ICryptographyService, CryptographyService>();
 

@@ -1,16 +1,19 @@
-﻿using Core.Enums;
-using Core.Models;
-using Core.Requests;
-using System.Windows.Forms;
-using System.Xml;
+﻿using Db.Models;
+using MediatR;
 
 namespace UI.Forms
 {
     public partial class HomeForm : Form
     {
-        public HomeForm(UserPasswordSystemInfo userInfo)
+        private readonly IMediator _mediator;
+
+        public HomeForm(IMediator mediator, List<AccountInfo> accounts)
         {
             InitializeComponent();
+
+            _mediator = mediator;
+
+            AddAccountsInGrid(accounts);
 
             // for test
             Grid.Rows.Add("Value1", "Value2");
@@ -21,45 +24,53 @@ namespace UI.Forms
             Grid.Rows.Add("Value1", "Value2");
         }
 
+        private void AddAccountsInGrid(List<AccountInfo> accounts)
+        {
+            foreach (var account in accounts)
+            {
+                Grid.Rows.Add(account.WebsiteName, account.Username);
+            }
+        }
+
         private void AddNewAccountInfoButton_Click(object sender, EventArgs e)
         {
-            //using (var addNewAccountForm = new AddNewAccountForm())
-            //{
-            //    if (addNewAccountForm.ShowDialog() == DialogResult.OK)
-            //    {
-            //        var addAccountRequest = new AddAccountRequest
-            //        {
-            //            AccountInfo = new AccountInfo
-            //            {
-            //                Name = addNewAccountForm.AppName,
-            //                Username = addNewAccountForm.UserName,
-            //                PasswordHash = addNewAccountForm.PasswordHash,
-            //            },
-            //        };
+            using (var addNewAccountForm = new AddNewAccountForm())
+            {
+                if (addNewAccountForm.ShowDialog() == DialogResult.OK)
+                {
+                    var addAccountRequest = new AddAccountRequest
+                    {
+                        AccountInfo = new AccountInfo
+                        {
+                            Name = addNewAccountForm.AppName,
+                            Username = addNewAccountForm.UserName,
+                            PasswordHash = addNewAccountForm.PasswordHash,
+                        },
+                    };
 
-            //        var addAccountResponse = _core.AddAccount(addAccountRequest);
+                    var addAccountResponse = _core.AddAccount(addAccountRequest);
 
-            //        switch (addAccountResponse.Status)
-            //        {
-            //            case AddAccountStatus.Success:
-            //                Grid.Rows.Add(addAccountResponse.NewlyAddedAccountInfo.Name, addAccountResponse.NewlyAddedAccountInfo.Username);
-            //                MessageBox.Show("New account added successfully");
-            //                break;
-            //            case AddAccountStatus.InvalidToken:
-            //                MessageBox.Show("Your session expired, log in again");
-            //                RedirectToLoginForm();
-            //                break;
-            //            case AddAccountStatus.AccountUsernamePairAlreadyExists:
-            //                MessageBox.Show("Account with that username is already exists");
-            //                break;
-            //            case AddAccountStatus.ServerError:
-            //                MessageBox.Show("Internal server error, try again");
-            //                break;
-            //            default:
-            //                throw new ArgumentOutOfRangeException("Invalid status value");
-            //        }
-            //    }
-            //}
+                    switch (addAccountResponse.Status)
+                    {
+                        case AddAccountStatus.Success:
+                            Grid.Rows.Add(addAccountResponse.NewlyAddedAccountInfo.Name, addAccountResponse.NewlyAddedAccountInfo.Username);
+                            MessageBox.Show("New account added successfully");
+                            break;
+                        case AddAccountStatus.InvalidToken:
+                            MessageBox.Show("Your session expired, log in again");
+                            RedirectToLoginForm();
+                            break;
+                        case AddAccountStatus.AccountUsernamePairAlreadyExists:
+                            MessageBox.Show("Account with that username is already exists");
+                            break;
+                        case AddAccountStatus.ServerError:
+                            MessageBox.Show("Internal server error, try again");
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("Invalid status value");
+                    }
+                }
+            }
         }
 
         private void LogOutButton_Click(object sender, EventArgs e)
@@ -72,12 +83,12 @@ namespace UI.Forms
             Close();
             Dispose();
 
-            //new LoginForm().Show();
+            new LoginForm(_mediator).Show();
         }
 
         private void Grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.ColumnIndex == Grid.Columns["ApplicationName"].Index || 
+            if (e.ColumnIndex == Grid.Columns["ApplicationName"].Index ||
                 e.ColumnIndex == Grid.Columns["Username"].Index)
             {
                 return;
@@ -116,7 +127,7 @@ namespace UI.Forms
             //            throw new ArgumentOutOfRangeException("Invalid status value");
             //    }
             //}
-            
+
             //if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
             //{
             //    var deleteAccountResponse = _core.DeleteAccount(new DeleteAccountRequest
