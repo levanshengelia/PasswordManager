@@ -72,7 +72,7 @@ namespace UI.Forms
             switch (response.Status)
             {
                 case ResponseStatus.Success:
-                    RedirectToHomeForm(response.Accounts);
+                    RedirectToHomeForm(response.Accounts, token);
                     break;
                 case ResponseStatus.InvalidToken:
                     MessageBox.Show(response.ErrorMessage);
@@ -86,12 +86,12 @@ namespace UI.Forms
             }
         }
 
-        private void RedirectToHomeForm(List<AccountInfo> accounts)
+        private void RedirectToHomeForm(List<AccountInfo> accounts, string token)
           {
             Close();
             Dispose();
 
-            new HomeForm(_mediator, accounts).Show();
+            new HomeForm(_mediator, accounts, token).Show();
         }
 
         private void RedirectToLoginForm()

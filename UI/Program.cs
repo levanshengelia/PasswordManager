@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
 using UI.Configurations;
+using UI.Forms;
 
 namespace UI;
 
@@ -28,7 +28,7 @@ static class Program
 
         var mediator = serviceProvider.GetRequiredService<IMediator>();
 
-        new RegistrationForm(mediator).Show();
+        new LoginForm(mediator).Show();
         //new HomeForm(new(), core).Show();
 
         Application.Run();

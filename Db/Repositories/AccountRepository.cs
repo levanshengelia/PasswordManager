@@ -13,7 +13,7 @@ namespace Db.Repositories
         public Task AddAccount(int userId, string websiteName, string username, string encryptedPassword)
         {
             var query = @"INSERT INTO Accounts (UserId, WebsiteName, Username, EncryptedPassword)
-                            Values (@userId, @websiteName, @username, @ecryptedPassword)";
+                            Values (@userId, @websiteName, @username, @encryptedPassword)";
 
             using var connection = new SqliteConnection(_connectionString);
 

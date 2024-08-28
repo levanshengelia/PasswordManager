@@ -45,7 +45,10 @@ public static class ServiceProviderBuilder
             return new AccountRepository(connectionString);
         });
 
-        serviceCollection.AddSingleton<ICryptographyService, CryptographyService>();
+        serviceCollection.AddSingleton<ICryptographyService>(provider =>
+        {
+            return new CryptographyService("key");
+        });
 
         serviceCollection.AddMediatR(config =>
         {

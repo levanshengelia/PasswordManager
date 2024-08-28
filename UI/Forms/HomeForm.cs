@@ -1,4 +1,6 @@
-﻿using Db.Models;
+﻿using Core.Enums;
+using Core.Requests_Handlers;
+using Db.Models;
 using MediatR;
 
 namespace UI.Forms
@@ -6,22 +8,16 @@ namespace UI.Forms
     public partial class HomeForm : Form
     {
         private readonly IMediator _mediator;
+        private readonly string _token;
 
-        public HomeForm(IMediator mediator, List<AccountInfo> accounts)
+        public HomeForm(IMediator mediator, List<AccountInfo> accounts, string token)
         {
             InitializeComponent();
 
             _mediator = mediator;
+            _token = token;
 
             AddAccountsInGrid(accounts);
-
-            // for test
-            Grid.Rows.Add("Value1", "Value2");
-            Grid.Rows.Add("Value1", "Value2");
-            Grid.Rows.Add("Value1", "Value2");
-            Grid.Rows.Add("Value1", "Value2");
-            Grid.Rows.Add("Value1", "Value2");
-            Grid.Rows.Add("Value1", "Value2");
         }
 
         private void AddAccountsInGrid(List<AccountInfo> accounts)
@@ -32,38 +28,39 @@ namespace UI.Forms
             }
         }
 
-        private void AddNewAccountInfoButton_Click(object sender, EventArgs e)
+        private async void AddNewAccountInfoButton_Click(object sender, EventArgs e)
         {
             using (var addNewAccountForm = new AddNewAccountForm())
             {
                 if (addNewAccountForm.ShowDialog() == DialogResult.OK)
                 {
+                    if (addNewAccountForm.Password != addNewAccountForm.ConfirmedPassword)
+                    {
+                        MessageBox.Show("Password don't match");
+                        return;
+                    }
+
                     var addAccountRequest = new AddAccountRequest
                     {
-                        AccountInfo = new AccountInfo
-                        {
-                            Name = addNewAccountForm.AppName,
-                            Username = addNewAccountForm.UserName,
-                            PasswordHash = addNewAccountForm.PasswordHash,
-                        },
+                        Token = _token,
+                        WebsiteName = addNewAccountForm.WebsiteName,
+                        Username = addNewAccountForm.UserName,
+                        Password = addNewAccountForm.Password,
                     };
 
-                    var addAccountResponse = _core.AddAccount(addAccountRequest);
+                    var addAccountResponse = await _mediator.Send(addAccountRequest);
 
                     switch (addAccountResponse.Status)
                     {
-                        case AddAccountStatus.Success:
-                            Grid.Rows.Add(addAccountResponse.NewlyAddedAccountInfo.Name, addAccountResponse.NewlyAddedAccountInfo.Username);
+                        case ResponseStatus.Success:
+                            Grid.Rows.Add(addAccountRequest.WebsiteName, addAccountRequest.Username);
                             MessageBox.Show("New account added successfully");
                             break;
-                        case AddAccountStatus.InvalidToken:
+                        case ResponseStatus.InvalidToken:
                             MessageBox.Show("Your session expired, log in again");
                             RedirectToLoginForm();
                             break;
-                        case AddAccountStatus.AccountUsernamePairAlreadyExists:
-                            MessageBox.Show("Account with that username is already exists");
-                            break;
-                        case AddAccountStatus.ServerError:
+                        case ResponseStatus.Fail:
                             MessageBox.Show("Internal server error, try again");
                             break;
                         default:
@@ -94,13 +91,13 @@ namespace UI.Forms
                 return;
             }
 
-            //var applicationName = (string)Grid[1, e.RowIndex].Value;
+            var websiteName = (string)Grid[1, e.RowIndex].Value;
 
             //if (e.ColumnIndex == Grid.Columns["PasswordCopyOption"].Index)
             //{
             //    var getPasswordResponse = _core.GetPassword(new GetPasswordRequest
             //    {
-            //        ApplicationName = applicationName
+            //        ApplicationName = websiteName
             //    });
 
             //    switch (getPasswordResponse.Status)
@@ -128,30 +125,30 @@ namespace UI.Forms
             //    }
             //}
 
-            //if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
-            //{
-            //    var deleteAccountResponse = _core.DeleteAccount(new DeleteAccountRequest
-            //    {
-            //        AccountName = applicationName,
-            //    });
+            if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
+            {
+                var deleteAccountResponse = _mediator.Send(new DeleteAccountRequest
+                {
+                    AccountName = applicationName,
+                });
 
-            //    switch (deleteAccountResponse.Status)
-            //    {
-            //        case DeleteAccountStatus.Success:
-            //            Grid.Rows.Remove(Grid.Rows[e.RowIndex]); 
-            //            break;
-            //        case DeleteAccountStatus.AccountDoesNotExist:
-            //            MessageBox.Show("Application does not exist, try again");
-            //            break;
-            //        case DeleteAccountStatus.InvalidToken:
-            //            MessageBox.Show("Your session expired, log in again");
-            //            RedirectToLoginForm();
-            //            break;
-            //        case DeleteAccountStatus.ServerError:
-            //            MessageBox.Show("Internal error, try again");
-            //            break;
-            //    }
-            //}
+                switch (deleteAccountResponse.Status)
+                {
+                    case DeleteAccountStatus.Success:
+                        Grid.Rows.Remove(Grid.Rows[e.RowIndex]);
+                        break;
+                    case DeleteAccountStatus.AccountDoesNotExist:
+                        MessageBox.Show("Application does not exist, try again");
+                        break;
+                    case DeleteAccountStatus.InvalidToken:
+                        MessageBox.Show("Your session expired, log in again");
+                        RedirectToLoginForm();
+                        break;
+                    case DeleteAccountStatus.ServerError:
+                        MessageBox.Show("Internal error, try again");
+                        break;
+                }
+            }
         }
     }
 }

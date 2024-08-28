@@ -4,7 +4,6 @@ using Core.Services.IServices;
 using Db.Repositories.IRepositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Core.Requests_Handlers
 {
@@ -47,9 +46,18 @@ namespace Core.Requests_Handlers
 
                 var userId = await _userRepository.GetUserIdByToken(request.Token);
 
-                var encryptedPassword = _cryptographyService.Encrypt(request.Password, "secretKey");
+                var encryptedPassword = _cryptographyService.Encrypt(request.Password);
 
-                var doesAccountAlreadyExist = (await _accountRepository.GetAccount(userId!.Value, request.WebsiteName, request.Username)) is null;
+                var doesAccountAlreadyExist = (await _accountRepository.GetAccount(userId!.Value, request.WebsiteName, request.Username)) is not null;
+
+                if (doesAccountAlreadyExist) 
+                {
+                    return new AddAccountResponse
+                    {
+                        Status = ResponseStatus.Fail,
+                        ErrorMessage = "This account already exists",
+                    };
+                }
 
                 await _accountRepository.AddAccount(userId!.Value, request.WebsiteName, request.Username, encryptedPassword);
 

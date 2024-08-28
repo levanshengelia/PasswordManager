@@ -4,16 +4,61 @@ using System.Text;
 
 namespace Core.Services
 {
-    public class CryptographyService : ICryptographyService
+    public class CryptographyService(string key) : ICryptographyService
     {
-        public string Decrypt(string encryptedText, string key)
+        public string Encrypt(string plainText)
         {
-            throw new NotImplementedException();
+            var iv = new byte[16];
+            byte[] array;
+
+            using (var aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(Get128BitString(key));
+                aes.IV = iv;
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using var memoryStream = new MemoryStream();
+                using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+                using (var streamWriter = new StreamWriter(cryptoStream))
+                {
+                    streamWriter.Write(plainText);
+                }
+                array = memoryStream.ToArray();
+            }
+
+            return Convert.ToBase64String(array);
         }
 
-        public string Encrypt(string plainText, string key)
+        public string Decrypt(string encryptedText)
         {
-            throw new NotImplementedException();
+            var iv = new byte[16];
+            var buffer = Convert.FromBase64String(encryptedText);
+
+            using Aes aes = Aes.Create();
+
+            aes.Key = Encoding.UTF8.GetBytes(Get128BitString(key));
+            aes.IV = iv;
+
+            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+            using var memoryStream = new MemoryStream(buffer);
+            using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+            using var streamReader = new StreamReader(cryptoStream);
+
+            return streamReader.ReadToEnd();
+        }
+
+        private static string Get128BitString(string keyToConvert)
+        {
+            var b = new StringBuilder();
+
+            for (var i = 0; i < 16; i++)
+            {
+                b.Append(keyToConvert[i % keyToConvert.Length]);
+            }
+
+            return b.ToString();
         }
 
         public string HashWithSHA256(string plainText)
