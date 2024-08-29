@@ -13,7 +13,7 @@ namespace Core.Requests
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
     }
-
+     
     public class LoginRequestHandler : IRequestHandler<LoginRequest, LoginResponse>
     {
         private readonly ILogger<LoginRequestHandler> _logger;

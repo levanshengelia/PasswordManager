@@ -24,6 +24,24 @@ namespace Db.Repositories
             return Task.FromResult(true);
         }
 
+        public Task DeleteAccount(int userId, string websiteName, string username)
+        {
+            var query = @"DELETE FROM Accounts WHERE UserId = @userId AND WebsiteName = @websiteName AND Username = @username";
+
+            using var connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+
+            var rowsDeleted = connection.Execute(query, new { userId, websiteName, username });
+
+            if (rowsDeleted != 1)
+            {
+                throw new Exception("Error during deleting account from db");
+            }
+
+            return Task.CompletedTask;
+        }
+
         public Task<AccountInfo?> GetAccount(int userId, string websiteName, string username)
         {
             var query = @"SELECT * FROM Accounts WHERE UserId = @userId AND WebsiteName = @websiteName AND Username = @username LIMIT 1";
@@ -48,6 +66,19 @@ namespace Db.Repositories
             var accounts = connection.Query<Account>(query, new { userId });
 
             return Task.FromResult(accounts.Select(x => new AccountInfo(x)).ToList());
+        }
+
+        public Task<string> GetEncryptedPassword(int userId, string websiteName, string username)
+        {
+            var query = @"SELECT EncryptedPassword FROM Accounts WHERE UserId = @userId AND WebsiteName = @websiteName AND Username = @username LIMIT 1";
+
+            using var connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+
+            var encryptedPassword = connection.QueryFirst<string>(query, new{ userId, websiteName, username });
+
+            return Task.FromResult(encryptedPassword);
         }
     }
 }

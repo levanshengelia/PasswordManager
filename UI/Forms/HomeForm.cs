@@ -1,5 +1,6 @@
 ﻿using Core.Enums;
 using Core.Requests_Handlers;
+using Core.Responses;
 using Db.Models;
 using MediatR;
 
@@ -83,7 +84,7 @@ namespace UI.Forms
             new LoginForm(_mediator).Show();
         }
 
-        private void Grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void Grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == Grid.Columns["ApplicationName"].Index ||
                 e.ColumnIndex == Grid.Columns["Username"].Index)
@@ -91,64 +92,82 @@ namespace UI.Forms
                 return;
             }
 
-            var websiteName = (string)Grid[1, e.RowIndex].Value;
+            var websiteName = (string)Grid[0, e.RowIndex].Value;
+            var username = (string)Grid[1, e.RowIndex].Value;
 
-            //if (e.ColumnIndex == Grid.Columns["PasswordCopyOption"].Index)
-            //{
-            //    var getPasswordResponse = _core.GetPassword(new GetPasswordRequest
-            //    {
-            //        ApplicationName = websiteName
-            //    });
-
-            //    switch (getPasswordResponse.Status)
-            //    {
-            //        case GetPasswordStatus.Success:
-            //            Clipboard.SetText(getPasswordResponse.PasswordHash);
-            //            _ = Task.Run(() =>
-            //            {
-            //                Thread.Sleep(10_000);
-            //                Clipboard.Clear();
-            //            });
-            //            break;
-            //        case GetPasswordStatus.ApplicationDoesNotExist:
-            //            MessageBox.Show("Application does not exist, try again");
-            //            break;
-            //        case GetPasswordStatus.InvalidToken:
-            //            MessageBox.Show("Your session expired, log in again");
-            //            RedirectToLoginForm();
-            //            break;
-            //        case GetPasswordStatus.ServerError:
-            //            MessageBox.Show("Internal error, try again");
-            //            break;
-            //        default:
-            //            throw new ArgumentOutOfRangeException("Invalid status value");
-            //    }
-            //}
-
-            if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
+            if (e.ColumnIndex == Grid.Columns["PasswordCopyOption"].Index)
             {
-                var deleteAccountResponse = _mediator.Send(new DeleteAccountRequest
+                var getPasswordRequest = new GetPasswordRequest
                 {
-                    AccountName = applicationName,
-                });
+                    Token = _token,
+                    WebsiteName = websiteName,
+                    Username = username,
+                };
 
-                switch (deleteAccountResponse.Status)
+                var getPasswordResponse = await _mediator.Send(getPasswordRequest);
+
+                switch (getPasswordResponse.Status)
                 {
-                    case DeleteAccountStatus.Success:
-                        Grid.Rows.Remove(Grid.Rows[e.RowIndex]);
+                    case ResponseStatus.Success:
+                        CopyPasswordToClipboard(getPasswordResponse);
                         break;
-                    case DeleteAccountStatus.AccountDoesNotExist:
-                        MessageBox.Show("Application does not exist, try again");
-                        break;
-                    case DeleteAccountStatus.InvalidToken:
+                    case ResponseStatus.InvalidToken:
                         MessageBox.Show("Your session expired, log in again");
                         RedirectToLoginForm();
                         break;
-                    case DeleteAccountStatus.ServerError:
-                        MessageBox.Show("Internal error, try again");
+                    case ResponseStatus.Fail:
+                        MessageBox.Show("Your session expired, log in again");
+                        RedirectToLoginForm();
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Invalid status value");
                 }
             }
+
+            if (e.ColumnIndex == Grid.Columns["DeleteOption"].Index)
+            {
+                var deleteAccountRequest = new DeleteAccountRequest
+                {
+                    Token = _token,
+                    WebsiteName = websiteName,
+                    Username = username,
+                };
+
+                var deleteAccountResponse = await _mediator.Send(deleteAccountRequest);
+
+                switch (deleteAccountResponse.Status)
+                {
+                    case ResponseStatus.Success:
+                        Grid.Rows.Remove(Grid.Rows[e.RowIndex]);
+                        break;
+                    case ResponseStatus.InvalidToken:
+                        MessageBox.Show("Your session expired, log in again");
+                        RedirectToLoginForm();
+                        break;
+                    case ResponseStatus.Fail:
+                        MessageBox.Show("Internal error, try again");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Invalid status value");
+                }
+            }
+        }
+
+        private static void CopyPasswordToClipboard(GetPasswordResponse getPasswordResponse)
+        {
+            _ = Task.Run(() =>
+            {
+                var thread = new Thread(() =>
+                {
+                    Clipboard.SetText(getPasswordResponse.Password);
+                    Thread.Sleep(10_000);
+                    Clipboard.Clear();
+                });
+
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+                thread.Join();
+            });
         }
     }
 }
