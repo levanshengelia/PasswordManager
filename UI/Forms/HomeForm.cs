@@ -5,7 +5,7 @@ using Db.Models;
 using MediatR;
 
 namespace UI.Forms
-{
+{  
     public partial class HomeForm : Form
     {
         private readonly IMediator _mediator;

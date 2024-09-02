@@ -2,78 +2,43 @@
 using System.Security.Cryptography;
 using System.Text;
 
+#pragma warning disable CA1416 // Validate platform compatibility (This service will only work on windows machine)
+
 namespace Core.Services
 {
-    public class CryptographyService(string key) : ICryptographyService
+    public class CryptographyService : ICryptographyService
     {
         public string Encrypt(string plainText)
         {
-            var iv = new byte[16];
-            byte[] array;
-
-            using (var aes = Aes.Create())
-            {
-                aes.Key = Encoding.UTF8.GetBytes(Get128BitString(key));
-                aes.IV = iv;
-
-                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
-                using var memoryStream = new MemoryStream();
-                using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
-                using (var streamWriter = new StreamWriter(cryptoStream))
-                {
-                    streamWriter.Write(plainText);
-                }
-                array = memoryStream.ToArray();
-            }
-
-            return Convert.ToBase64String(array);
+            byte[] data = Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(ProtectedData.Protect(data, null, DataProtectionScope.LocalMachine));
         }
 
         public string Decrypt(string encryptedText)
         {
-            var iv = new byte[16];
-            var buffer = Convert.FromBase64String(encryptedText);
+            byte[] encryptedData = Convert.FromBase64String(encryptedText);
+            byte[] decryptedData = ProtectedData.Unprotect(encryptedData, null, DataProtectionScope.LocalMachine);
 
-            using Aes aes = Aes.Create();
-
-            aes.Key = Encoding.UTF8.GetBytes(Get128BitString(key));
-            aes.IV = iv;
-
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
-            using var memoryStream = new MemoryStream(buffer);
-            using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-            using var streamReader = new StreamReader(cryptoStream);
-
-            return streamReader.ReadToEnd();
-        }
-
-        private static string Get128BitString(string keyToConvert)
-        {
-            var b = new StringBuilder();
-
-            for (var i = 0; i < 16; i++)
+            if (decryptedData == null)
             {
-                b.Append(keyToConvert[i % keyToConvert.Length]);
+                throw new CryptographicException("Decryption failed.");
             }
 
-            return b.ToString();
+            return Encoding.UTF8.GetString(decryptedData);
         }
 
         public string HashWithSHA256(string plainText)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(plainText));
+            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(plainText));
 
-                var builder = new StringBuilder();
-                for (var i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
+            var builder = new StringBuilder();
+            for (var i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
             }
+            return builder.ToString();
         }
     }
 }
+
+#pragma warning restore CA1416 // Validate platform compatibility

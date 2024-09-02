@@ -23,9 +23,8 @@ public static class ServiceProviderBuilder
         var serviceCollection = new ServiceCollection();
 
         Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Debug()
-               .WriteTo.Console()
-               .CreateLogger();
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
 
         serviceCollection.AddLogging(loggingBuilder =>
         {
@@ -45,10 +44,7 @@ public static class ServiceProviderBuilder
             return new AccountRepository(connectionString);
         });
 
-        serviceCollection.AddSingleton<ICryptographyService>(provider =>
-        {
-            return new CryptographyService("key");
-        });
+        serviceCollection.AddSingleton<ICryptographyService, CryptographyService>();
 
         serviceCollection.AddMediatR(config =>
         {
