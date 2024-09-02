@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a secure and user-friendly Password Manager desktop application built with WinForms. It allows users to securely store and centralize all their passwords in one place. The application ensures the security of the stored data by utilizing encryption and follows best practices for secure password management.
+This is a secure and user-friendly Password Manager desktop application built with WinForms (available for windows users only). It allows users to securely store and centralize all their passwords in one place. The application ensures the security of the stored data by utilizing encryption and follows best practices for secure password management.
 
 ## Features
 
